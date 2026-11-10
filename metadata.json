@@ -1,0 +1,6 @@
+{
+  "name": "DC Airbnb Host Earnings Estimator",
+  "description": "Transparent Airbnb host earnings estimator for Washington, DC homeowners using real comparable listing data, realistic ranges, and interactive mapping.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

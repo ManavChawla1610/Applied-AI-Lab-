@@ -1,0 +1,6 @@
+{
+  "summary":  "Redesign the Earnings tab to a minimal, Airbnb-style layout featuring a prominent headline, clean single-line metadata with click-to-modal controls, streamlined slider, unified search pill, and clean map with rate bubbles and automatic radius fitting. Light touch collapsibles applied to Costs & Profit and Legal & Setup tabs.",
+  "updatedAt":  "2026-11-10T17:18:41.196695340Z",
+  "requestFeedback":  true,
+  "userFacing":  true
+}
