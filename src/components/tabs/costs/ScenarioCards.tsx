@@ -73,11 +73,11 @@ export const ScenarioCards: React.FC<ScenarioCardsProps> = ({
                 <div className="text-[11px] uppercase tracking-wider font-semibold opacity-70">
                   You keep
                 </div>
-                <div className={`text-xl sm:text-2xl font-black font-mono tracking-tight ${isSelected ? 'text-emerald-400' : 'text-gray-900'}`}>
+                <div className={`text-xl sm:text-2xl font-black tabular-nums tracking-tight ${isSelected ? 'text-emerald-400' : 'text-gray-900'}`}>
                   {formatCurrency(sc.monthlyNet)}
                   <span className="text-xs font-normal opacity-70">/mo</span>
                 </div>
-                <div className="text-[11px] opacity-75 font-mono">
+                <div className="text-[11px] opacity-75 tabular-nums">
                   ≈ {formatCurrency(sc.annualNet)}/year
                 </div>
               </div>

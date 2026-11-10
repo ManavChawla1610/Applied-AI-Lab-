@@ -105,8 +105,8 @@ export const NightBudgetTracker: React.FC<NightBudgetTrackerProps> = ({
           ) : (
             <p>
               Without an exemption, your legal maximum is about{' '}
-              <strong className="text-gray-900 font-mono">{formatCurrency(legalMaxAnnual)}/year</strong> in payout{' '}
-              <span className="text-gray-500">(vs about <span className="font-mono">{formatCurrency(chosenAnnual)}</span> at your chosen {nightsPerMonth} nights/month)</span>.
+              <strong className="text-gray-900 tabular-nums">{formatCurrency(legalMaxAnnual)}/year</strong> in payout{' '}
+              <span className="text-gray-500">(vs about <span className="tabular-nums">{formatCurrency(chosenAnnual)}</span> at your chosen {nightsPerMonth} nights/month)</span>.
             </p>
           )}
         </div>
@@ -116,7 +116,7 @@ export const NightBudgetTracker: React.FC<NightBudgetTrackerProps> = ({
       <div className="space-y-2 pt-2">
         <div className="flex items-center justify-between text-xs text-gray-500 font-medium">
           <span>Cumulative hosted nights (Jan – Dec)</span>
-          <span className="font-mono text-rose-600 font-semibold">
+          <span className="tabular-nums text-rose-600 font-semibold">
             Red line = {annualCap}-night legal cap
           </span>
         </div>
@@ -129,7 +129,7 @@ export const NightBudgetTracker: React.FC<NightBudgetTrackerProps> = ({
               bottom: `${(annualCap / maxBarValue) * 160 + 24}px`,
             }}
           >
-            <span className="text-[10px] font-mono font-bold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200 -mt-3 mr-1">
+            <span className="text-[10px] tabular-nums font-bold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200 -mt-3 mr-1">
               Cap: {annualCap} nights
             </span>
           </div>
@@ -142,7 +142,7 @@ export const NightBudgetTracker: React.FC<NightBudgetTrackerProps> = ({
 
               return (
                 <div key={idx} className="flex-1 flex flex-col items-center h-full justify-end group">
-                  <span className="text-[10px] font-mono font-semibold text-gray-500 mb-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="text-[10px] tabular-nums font-semibold text-gray-500 mb-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     {item.cumulative}
                   </span>
                   <div

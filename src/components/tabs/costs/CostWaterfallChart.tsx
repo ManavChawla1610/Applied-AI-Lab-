@@ -101,7 +101,7 @@ export const CostWaterfallChart: React.FC<CostWaterfallChartProps> = ({ summary 
             From gross guest bookings to your actual take-home profit
           </p>
         </div>
-        <div className="text-xs text-gray-600 font-mono">
+        <div className="text-xs text-gray-600 tabular-nums">
           Gross: <strong className="text-gray-900">{formatCurrency(gross)}</strong> · Total Costs: <strong className="text-rose-600">{formatCurrency(summary.totalCosts)}</strong>
         </div>
       </div>
@@ -123,7 +123,7 @@ export const CostWaterfallChart: React.FC<CostWaterfallChartProps> = ({ summary 
                     ({step.sublabel})
                   </span>
                 </div>
-                <div className="flex items-center gap-2 font-mono">
+                <div className="flex items-center gap-2 tabular-nums">
                   <span className={`font-bold ${step.amount < 0 ? 'text-rose-600' : 'text-gray-900'}`}>
                     {step.amount < 0 ? `-${formatCurrency(absAmount)}` : formatCurrency(absAmount)}
                   </span>

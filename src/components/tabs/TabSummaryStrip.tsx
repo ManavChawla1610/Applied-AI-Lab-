@@ -52,11 +52,11 @@ export const TabSummaryStrip: React.FC<TabSummaryStripProps> = ({
           {formatSpaceType(spaceType, bedrooms)}
         </span>
         <span className="text-gray-300">·</span>
-        <span className="text-gray-600 font-mono whitespace-nowrap">
+        <span className="text-gray-600 tabular-nums whitespace-nowrap">
           {nights} nights
         </span>
         <span className="text-gray-300">·</span>
-        <span className="font-bold text-gray-900 font-mono whitespace-nowrap">
+        <span className="font-bold text-gray-900 tabular-nums whitespace-nowrap">
           {formatCurrency(listingPrice)}/night
         </span>
       </div>

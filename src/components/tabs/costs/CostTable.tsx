@@ -42,10 +42,10 @@ export const CostTable: React.FC<CostTableProps> = ({ summary }) => {
               <td className="py-3 px-4 text-emerald-950 font-semibold">
                 Gross Bookings (Nightly + Cleaning)
               </td>
-              <td className="py-3 px-4 text-right font-mono font-bold text-emerald-900">
+              <td className="py-3 px-4 text-right tabular-nums font-bold text-emerald-900">
                 {formatCurrency(summary.grossBookings)}
               </td>
-              <td className="py-3 px-4 text-right font-mono font-bold text-emerald-900">
+              <td className="py-3 px-4 text-right tabular-nums font-bold text-emerald-900">
                 {formatCurrency(summary.grossBookings * 12)}
               </td>
               <td className="py-3 px-4 text-emerald-800">
@@ -63,10 +63,10 @@ export const CostTable: React.FC<CostTableProps> = ({ summary }) => {
                 <td className="py-3 px-4 font-medium text-gray-900">
                   {item.label}
                 </td>
-                <td className="py-3 px-4 text-right font-mono font-semibold text-rose-600">
+                <td className="py-3 px-4 text-right tabular-nums font-semibold text-rose-600">
                   {item.monthly > 0 ? `-${formatCurrency(item.monthly)}` : '$0'}
                 </td>
-                <td className="py-3 px-4 text-right font-mono text-gray-500">
+                <td className="py-3 px-4 text-right tabular-nums text-gray-500">
                   {item.annual > 0 ? `-${formatCurrency(item.annual)}` : '$0'}
                 </td>
                 <td className="py-3 px-4 text-gray-600">
@@ -83,10 +83,10 @@ export const CostTable: React.FC<CostTableProps> = ({ summary }) => {
               <td className="py-3.5 px-4 text-rose-950">
                 Total Operating & Platform Costs
               </td>
-              <td className="py-3.5 px-4 text-right font-mono font-bold text-rose-700">
+              <td className="py-3.5 px-4 text-right tabular-nums font-bold text-rose-700">
                 -{formatCurrency(summary.totalCosts)}
               </td>
-              <td className="py-3.5 px-4 text-right font-mono font-bold text-rose-700">
+              <td className="py-3.5 px-4 text-right tabular-nums font-bold text-rose-700">
                 -{formatCurrency(summary.totalCosts * 12)}
               </td>
               <td className="py-3.5 px-4 text-rose-800">
@@ -102,10 +102,10 @@ export const CostTable: React.FC<CostTableProps> = ({ summary }) => {
               <td className="py-4 px-4 text-white">
                 Net Take-Home Before Housing Costs
               </td>
-              <td className="py-4 px-4 text-right font-mono text-emerald-400 text-sm">
+              <td className="py-4 px-4 text-right tabular-nums text-emerald-400 text-sm">
                 {formatCurrency(summary.netBeforeHousing)}
               </td>
-              <td className="py-4 px-4 text-right font-mono text-emerald-400 text-sm">
+              <td className="py-4 px-4 text-right tabular-nums text-emerald-400 text-sm">
                 {formatCurrency(summary.annualNetBeforeHousing)}
               </td>
               <td className="py-4 px-4 text-gray-300 font-normal">
@@ -121,10 +121,10 @@ export const CostTable: React.FC<CostTableProps> = ({ summary }) => {
               <td className="py-3 px-4 font-medium text-gray-600">
                 DC Transient Lodging Tax (15.95%)
               </td>
-              <td className="py-3 px-4 text-right font-mono text-gray-500">
+              <td className="py-3 px-4 text-right tabular-nums text-gray-500">
                 {formatCurrency(summary.lodgingTaxAmount)}
               </td>
-              <td className="py-3 px-4 text-right font-mono text-gray-500">
+              <td className="py-3 px-4 text-right tabular-nums text-gray-500">
                 {formatCurrency(summary.lodgingTaxAmount * 12)}
               </td>
               <td colSpan={2} className="py-3 px-4 text-gray-600 font-normal not-italic">
