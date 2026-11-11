@@ -9,8 +9,8 @@ import {
   MIN_COMPARABLES,
   RADIUS_STEP_MI,
   START_RADIUS_MI,
-} from '../config/rules';
-import { Listing } from './data';
+} from '../config/rules.ts';
+import type { Listing } from './data.ts';
 
 export type SpaceType = 'private_room' | 'entire_home';
 export type BedroomOption = 'studio' | '1' | '2' | '3+';
