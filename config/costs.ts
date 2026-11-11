@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { AIRBNB_HOST_FEE } from './rules';
-import { DC_RULES } from './dcRules';
+import { AIRBNB_HOST_FEE } from './rules.ts';
+import { DC_RULES } from './dcRules.ts';
 
 export type CostItemType = 'pctGross' | 'pctNightly' | 'perStay' | 'annual' | 'biennial';
 

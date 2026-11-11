@@ -4,7 +4,8 @@
  */
 
 import 'dotenv/config';
-import express, { Request, Response } from 'express';
+import express from 'express';
+import type { Request, Response } from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import {
@@ -12,12 +13,13 @@ import {
   MIN_QUERY_LENGTH,
   NOMINATIM_BASE_URL,
   NOMINATIM_USER_AGENT,
-} from './config/geo';
-import { processGeocodeResults, ValidatedSuggestion } from './src/lib/geoUtils';
-import { DC_RULES } from './config/dcRules';
-import { DC_MARKET } from './config/market';
-import { DEFAULT_COST_ITEMS } from './config/costs';
-import { verifyReplyNumbers } from './src/lib/aiVerify';
+} from './config/geo.ts';
+import { processGeocodeResults } from './src/lib/geoUtils.ts';
+import type { ValidatedSuggestion } from './src/lib/geoUtils.ts';
+import { DC_RULES } from './config/dcRules.ts';
+import { DC_MARKET } from './config/market.ts';
+import { DEFAULT_COST_ITEMS } from './config/costs.ts';
+import { verifyReplyNumbers } from './src/lib/aiVerify.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
