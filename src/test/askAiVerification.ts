@@ -4,7 +4,7 @@
  */
 
 import { verifyReplyNumbers } from '../lib/aiVerify';
-import { parseSourceTag } from '../components/tabs/AskAiTab';
+import { parseSourceTag } from '../components/HostChat';
 import { DC_RULES } from '../../config/dcRules';
 import { DC_MARKET } from '../../config/market';
 import { DEFAULT_COST_ITEMS } from '../../config/costs';

@@ -60,13 +60,13 @@ async function runGeoTests() {
   assert(isInside === false, 'Point at 38.88, -77.10 must be recognized as outside DC bounds');
   console.log('✓ Test 2 passed: out-of-bounds point correctly identified as outside DC\n');
 
-  // Test 3: Query length threshold (< 4 chars triggers no search)
-  console.log('Test 3: Query length validation (< 4 chars triggers no request)');
-  const query3 = 'Dup';
-  const query4 = 'Dupo';
-  assert(query3.length < MIN_QUERY_LENGTH, '3 characters is below MIN_QUERY_LENGTH');
-  assert(query4.length >= MIN_QUERY_LENGTH, '4 characters satisfies MIN_QUERY_LENGTH');
-  console.log('✓ Test 3 passed: 3 chars rejected, 4+ chars accepted\n');
+  // Test 3: Query length threshold (< 3 chars triggers no search; Photon supports search-as-you-type from 3)
+  console.log('Test 3: Query length validation (< 3 chars triggers no request)');
+  const query2 = '22';
+  const query3 = '225';
+  assert(query2.length < MIN_QUERY_LENGTH, '2 characters is below MIN_QUERY_LENGTH');
+  assert(query3.length >= MIN_QUERY_LENGTH, '3 characters satisfies MIN_QUERY_LENGTH');
+  console.log('✓ Test 3 passed: 2 chars rejected, 3+ chars accepted\n');
 
   // Test 4: In-memory cache deduplication simulation
   console.log('Test 4: In-memory caching prevents duplicate upstream network requests');

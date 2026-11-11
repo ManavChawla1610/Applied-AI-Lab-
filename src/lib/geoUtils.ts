@@ -27,6 +27,64 @@ export interface NominatimRawItem {
   address?: NominatimAddress;
 }
 
+/** A single Photon GeoJSON feature. */
+export interface PhotonFeature {
+  geometry?: { coordinates?: [number, number] | number[] };
+  properties?: {
+    osm_id?: number | string;
+    osm_key?: string;
+    name?: string;
+    housenumber?: string;
+    street?: string;
+    district?: string;
+    locality?: string;
+    city?: string;
+    county?: string;
+    state?: string;
+    countrycode?: string;
+    [key: string]: unknown;
+  };
+}
+
+/**
+ * Converts Photon GeoJSON features into the Nominatim-style shape that
+ * processGeocodeResults() already understands.
+ * IMPORTANT: GeoJSON coordinates are [LONGITUDE, LATITUDE].
+ * Features with missing or non-numeric coordinates are skipped.
+ */
+export function photonFeaturesToRaw(features: PhotonFeature[]): NominatimRawItem[] {
+  const out: NominatimRawItem[] = [];
+  for (const f of features || []) {
+    const coords = f.geometry?.coordinates;
+    if (!coords || coords.length < 2) continue;
+    const lng = Number(coords[0]);
+    const lat = Number(coords[1]);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) continue;
+
+    const p = f.properties || {};
+    const isStreetFeature = p.osm_key === 'highway';
+    const road = (p.street as string) || (isStreetFeature ? (p.name as string) : '') || '';
+    const houseNumber = (p.housenumber as string) || '';
+    const label = houseNumber && road ? `${houseNumber} ${road}` : (p.name as string) || road || '';
+
+    out.push({
+      place_id: p.osm_id,
+      lat,
+      lon: lng,
+      display_name: [label, p.district || p.locality, p.city, p.state].filter(Boolean).join(', '),
+      address: {
+        house_number: houseNumber || undefined,
+        road: road || undefined,
+        neighbourhood: (p.district as string) || (p.locality as string) || undefined,
+        city: p.city as string | undefined,
+        state: p.state as string | undefined,
+        country_code: ((p.countrycode as string) || '').toLowerCase() || undefined,
+      },
+    });
+  }
+  return out;
+}
+
 export interface ValidatedSuggestion {
   id: string;
   displayName: string;

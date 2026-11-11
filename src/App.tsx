@@ -25,21 +25,19 @@ import { TabSummaryStrip } from './components/tabs/TabSummaryStrip';
 import { EarningsTab } from './components/tabs/EarningsTab';
 import { CostsTab } from './components/tabs/CostsTab';
 import { LegalTab } from './components/tabs/LegalTab';
-import { AskAiTab } from './components/tabs/AskAiTab';
+import { HostChat } from './components/HostChat';
 import { AlertOctagon, RefreshCw } from 'lucide-react';
 
 const HASH_TO_TAB: Record<string, TabId> = {
   '#earnings': 'earnings',
   '#costs': 'costs',
   '#legal': 'legal',
-  '#ask': 'ask',
 };
 
 const TAB_TO_HASH: Record<TabId, string> = {
   earnings: '#earnings',
   costs: '#costs',
   legal: '#legal',
-  ask: '#ask',
 };
 
 export default function App() {
@@ -58,12 +56,21 @@ export default function App() {
 
   const [activeTab, setActiveTab] = useState<TabId>(getInitialTab);
 
+  // Floating assistant (like Airbnb's "Questions?" button). Old #ask links open it.
+  const [isChatOpen, setIsChatOpen] = useState<boolean>(
+    () => typeof window !== 'undefined' && window.location.hash.toLowerCase() === '#ask'
+  );
+  const openChat = useCallback(() => setIsChatOpen(true), []);
+  const closeChat = useCallback(() => setIsChatOpen(false), []);
+
   // Synchronize hash on browser back/forward and direct navigation
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.toLowerCase();
       if (HASH_TO_TAB[hash]) {
         setActiveTab(HASH_TO_TAB[hash]);
+      } else if (hash === '#ask') {
+        setIsChatOpen(true);
       }
     };
 
@@ -305,20 +312,25 @@ export default function App() {
             bedrooms={bedrooms}
             typicalNightlyEarnings={estimateResult.typicalNightlyEarnings}
             onNavigateTab={handleSelectTab}
+            onOpenChat={openChat}
           />
         )}
 
-        {/* Tab 4: Ask AI */}
-        {activeTab === 'ask' && (
-          <AskAiTab
-            nights={nights}
-            spaceType={spaceType}
-            bedrooms={bedrooms}
-            estimateResult={estimateResult}
-            costSummary={costSummary}
-          />
-        )}
       </main>
+
+      {/* Floating assistant on every tab */}
+      <HostChat
+        isOpen={isChatOpen}
+        onOpen={openChat}
+        onClose={closeChat}
+        pin={pin}
+        costAssumptions={costAssumptions}
+        nights={nights}
+        spaceType={spaceType}
+        bedrooms={bedrooms}
+        estimateResult={estimateResult}
+        costSummary={costSummary}
+      />
 
       {/* Top-Level Address Search Panel: accessible from any tab */}
       <AddressSearchPanel

@@ -4,9 +4,9 @@
  */
 
 import React from 'react';
-import { DollarSign, PieChart, ShieldCheck, Sparkles } from 'lucide-react';
+import { DollarSign, PieChart, ShieldCheck } from 'lucide-react';
 
-export type TabId = 'earnings' | 'costs' | 'legal' | 'ask';
+export type TabId = 'earnings' | 'costs' | 'legal';
 
 interface TabBarProps {
   activeTab: TabId;
@@ -17,7 +17,6 @@ export const TABS_CONFIG: { id: TabId; hash: string; label: string; icon: React.
   { id: 'earnings', hash: '#earnings', label: '1 · Earnings', icon: DollarSign },
   { id: 'costs', hash: '#costs', label: '2 · Costs & Profit', icon: PieChart },
   { id: 'legal', hash: '#legal', label: '3 · Legal & Setup', icon: ShieldCheck },
-  { id: 'ask', hash: '#ask', label: '4 · Ask AI', icon: Sparkles },
 ];
 
 export const TabBar: React.FC<TabBarProps> = ({ activeTab, onSelectTab }) => {
