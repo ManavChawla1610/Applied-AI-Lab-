@@ -23,9 +23,9 @@ import {
   SpaceType,
   validatePriceOverride,
 } from '../../lib/calc';
-import { GEOCODE_DEBOUNCE_MS, MIN_QUERY_LENGTH } from '../../config/geo';
 import { AIRBNB_HOST_FEE } from '../../config/rules';
 import { isWithinDcBounds } from './AddressSearchPanel';
+import { AddressSuggestion, OUTSIDE_DC_MESSAGE, useAddressSearch } from '../lib/useAddressSearch';
 
 export interface HomeDetailsModalProps {
   isOpen: boolean;
@@ -47,14 +47,7 @@ export interface HomeDetailsModalProps {
   }) => void;
 }
 
-interface GeocodeSuggestion {
-  id: string;
-  displayName: string;
-  shortLabel: string;
-  neighborhood: string;
-  lat: number;
-  lng: number;
-}
+type GeocodeSuggestion = AddressSuggestion;
 
 export const HomeDetailsModal: React.FC<HomeDetailsModalProps> = ({
   isOpen,
@@ -82,16 +75,14 @@ export const HomeDetailsModal: React.FC<HomeDetailsModalProps> = ({
   const [isPriceOpen, setIsPriceOpen] = useState<boolean>(Boolean(priceOverride));
   const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState<boolean>(includeLowActivity);
 
-  // Address search state
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [suggestions, setSuggestions] = useState<GeocodeSuggestion[]>([]);
-  const [isSearching, setIsSearching] = useState<boolean>(false);
-  const [boundsWarning, setBoundsWarning] = useState<string | null>(null);
-  const [searchError, setSearchError] = useState<string | null>(null);
+  // Address search state (shared search-as-you-type hook)
+  const search = useAddressSearch();
+  const [selectError, setSelectError] = useState<string | null>(null);
   const [isAddressInputFocused, setIsAddressInputFocused] = useState<boolean>(false);
-
-  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const abortControllerRef = useRef<AbortController | null>(null);
+  const searchQuery = search.query;
+  const suggestions = search.suggestions;
+  const isSearching = search.status === 'searching';
+  const boundsWarning = search.outsideDcError || selectError;
 
   useEffect(() => {
     if (isOpen) {
@@ -103,10 +94,8 @@ export const HomeDetailsModal: React.FC<HomeDetailsModalProps> = ({
       setTempPriceOverride(priceOverride);
       setPriceInput(priceOverride ? String(priceOverride) : '');
       setPriceError(null);
-      setSearchQuery('');
-      setSuggestions([]);
-      setBoundsWarning(null);
-      setSearchError(null);
+      search.reset();
+      setSelectError(null);
       setIsPriceOpen(Boolean(priceOverride));
       setIsMoreOptionsOpen(includeLowActivity);
     }
@@ -134,85 +123,34 @@ export const HomeDetailsModal: React.FC<HomeDetailsModalProps> = ({
     }
   };
 
-  const executeAddressSearch = async (term: string) => {
-    const trimmed = term.trim();
-    if (trimmed.length < MIN_QUERY_LENGTH) {
-      setSuggestions([]);
-      setIsSearching(false);
-      return;
-    }
-
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-    const controller = new AbortController();
-    abortControllerRef.current = controller;
-
-    setIsSearching(true);
-    setSearchError(null);
-    setBoundsWarning(null);
-
-    try {
-      const res = await fetch(`/api/geocode?q=${encodeURIComponent(trimmed)}`, {
-        signal: controller.signal,
-      });
-
-      if (!res.ok) {
-        throw new Error('Geocoding request failed');
-      }
-
-      const data = await res.json();
-      if (data && (data.outsideDc || data.error === 'outside_dc')) {
-        setBoundsWarning('This app covers Washington, DC only.');
-        setSuggestions([]);
-        return;
-      }
-      if (data && data.error) {
-        setSearchError(data.error);
-        setSuggestions([]);
-        return;
-      }
-      setSuggestions(Array.isArray(data) ? data : (data.suggestions || []));
-    } catch (err: unknown) {
-      if (err instanceof DOMException && err.name === 'AbortError') return;
-      console.error('Search error:', err);
-      setSearchError('Address search is unavailable right now');
-      setSuggestions([]);
-    } finally {
-      setIsSearching(false);
-    }
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectError(null);
+    search.setQuery(e.target.value);
   };
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
-    setSearchQuery(val);
-    setBoundsWarning(null);
-
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current);
+  const handleSearchKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      search.moveHighlight(1);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      search.moveHighlight(-1);
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      const picked = await search.resolveOnEnter();
+      if (picked) handleSelectSuggestion(picked);
     }
-
-    if (val.trim().length < MIN_QUERY_LENGTH) {
-      setSuggestions([]);
-      setIsSearching(false);
-      return;
-    }
-
-    setIsSearching(true);
-    debounceTimerRef.current = setTimeout(() => {
-      executeAddressSearch(val);
-    }, GEOCODE_DEBOUNCE_MS);
   };
 
   const handleSelectSuggestion = (item: GeocodeSuggestion) => {
     if (!isWithinDcBounds(item.lat, item.lng)) {
-      setBoundsWarning('This app covers Washington, DC only.');
+      setSelectError(OUTSIDE_DC_MESSAGE);
       return;
     }
     setSelectedPin({ lat: item.lat, lng: item.lng });
     setSelectedLabel(item.shortLabel);
-    setSearchQuery('');
-    setSuggestions([]);
+    search.reset();
+    setSelectError(null);
     setIsAddressInputFocused(false);
   };
 
@@ -239,7 +177,26 @@ export const HomeDetailsModal: React.FC<HomeDetailsModalProps> = ({
     setPriceError(null);
   };
 
-  const handleSaveAll = () => {
+  const handleSaveAll = async () => {
+    // Typed an address but didn't pick a suggestion: resolve it first
+    if (searchQuery.trim()) {
+      const picked = await search.resolveOnEnter();
+      if (!picked) return; // red DC-only error or hint is shown; keep the modal open
+      if (!isWithinDcBounds(picked.lat, picked.lng)) {
+        setSelectError(OUTSIDE_DC_MESSAGE);
+        return;
+      }
+      onUpdateDetails({
+        pin: { lat: picked.lat, lng: picked.lng },
+        customLabel: picked.shortLabel,
+        spaceType: tempSpaceType,
+        bedrooms: tempBedrooms,
+        includeLowActivity: tempIncludeLowActivity,
+        priceOverride: tempPriceOverride,
+      });
+      onClose();
+      return;
+    }
     onUpdateDetails({
       pin: selectedPin,
       customLabel: selectedLabel,
@@ -286,10 +243,9 @@ export const HomeDetailsModal: React.FC<HomeDetailsModalProps> = ({
                 type="text"
                 value={isAddressInputFocused ? searchQuery : (searchQuery || selectedLabel)}
                 onChange={handleSearchChange}
-                onFocus={() => {
-                  setIsAddressInputFocused(true);
-                  if (!searchQuery) setSearchQuery('');
-                }}
+                onKeyDown={handleSearchKeyDown}
+                onFocus={() => setIsAddressInputFocused(true)}
+                autoComplete="off"
                 placeholder="Where's your place in DC?"
                 className="w-full pl-10 pr-10 py-3 rounded-xl border border-gray-300 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 text-sm text-gray-900 placeholder-gray-400 focus:outline-none transition-all shadow-2xs"
               />
@@ -303,12 +259,16 @@ export const HomeDetailsModal: React.FC<HomeDetailsModalProps> = ({
             {/* Suggestions Dropdown */}
             {suggestions.length > 0 && (
               <div className="absolute top-full left-0 right-0 z-20 mt-1 bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden divide-y divide-gray-100">
-                {suggestions.map((item) => (
+                {suggestions.map((item, index) => (
                   <button
                     key={item.id}
                     type="button"
+                    onMouseDown={(e) => e.preventDefault()}
                     onClick={() => handleSelectSuggestion(item)}
-                    className="w-full text-left p-3 hover:bg-gray-50 flex items-start gap-2.5 transition-colors cursor-pointer"
+                    onMouseEnter={() => search.setHighlightedIndex(index)}
+                    className={`w-full text-left p-3 flex items-start gap-2.5 transition-colors cursor-pointer ${
+                      index === search.highlightedIndex ? 'bg-gray-100' : 'hover:bg-gray-50'
+                    }`}
                   >
                     <MapPin className="w-4 h-4 text-gray-400 shrink-0 mt-0.5" />
                     <div className="min-w-0">
@@ -332,12 +292,13 @@ export const HomeDetailsModal: React.FC<HomeDetailsModalProps> = ({
             </div>
           )}
 
-          {searchError && (
-            <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-800 flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
-              <span>{searchError}</span>
-            </div>
+          {!boundsWarning && search.hint && suggestions.length === 0 && (
+            <p className="text-xs text-gray-500 pl-1">{search.hint}</p>
           )}
+
+          <p className="text-[11px] text-gray-400 pl-1">
+            We only use your address to find similar listings nearby. It isn't saved.
+          </p>
         </div>
 
         {/* Section 2: Type of space (Segmented Control) */}
