@@ -42,6 +42,9 @@ export type Embedder = (texts: string[], taskType: 'RETRIEVAL_DOCUMENT' | 'RETRI
 type ItemMeta = { hash: string; sourceId: string };
 
 const EMBED_BATCH = 100;
+const EMBED_TIMEOUT_MS = 20_000;
+// How long a question waits for the index to finish building before using keyword search.
+const FIRST_QUERY_WAIT_MS = 12_000;
 
 let embedder: Embedder | null = null;
 let indexDir = path.resolve(process.cwd(), KB_INDEX_DIR);
@@ -52,6 +55,8 @@ let syncInFlight: Promise<SyncReport> | null = null;
 let syncQueued = false;
 let lastError = '';
 let lastSync: SyncReport | null = null;
+let syncStartedAt: string | null = null;
+let syncAttempts = 0;
 let unsubscribe: (() => void) | null = null;
 
 export interface SyncReport {
@@ -75,7 +80,12 @@ export async function geminiEmbedder(): Promise<Embedder | null> {
     const res = await ai.models.embedContent({
       model: EMBEDDING_MODEL,
       contents: texts,
-      config: { taskType, outputDimensionality: EMBEDDING_DIMENSIONS },
+      config: {
+        taskType,
+        outputDimensionality: EMBEDDING_DIMENSIONS,
+        // A stuck call becomes a visible error instead of hanging forever.
+        abortSignal: AbortSignal.timeout(EMBED_TIMEOUT_MS),
+      },
     });
     const vectors = (res.embeddings || []).map((e) => e.values || []);
     if (vectors.length !== texts.length || vectors.some((v) => v.length === 0)) {
@@ -159,6 +169,8 @@ export function syncVectorIndex(): Promise<SyncReport> {
     syncQueued = true;
     return syncInFlight;
   }
+  syncStartedAt = new Date().toISOString();
+  syncAttempts++;
   syncInFlight = doSync()
     .catch((err) => {
       lastError = String((err as Error)?.message || err).slice(0, 200);
@@ -223,6 +235,9 @@ function capPerSource(hits: SearchHit[], k: number): SearchHit[] {
 export async function retrieve(query: string, k = RAG_TOP_K): Promise<RetrievalResult> {
   const q = String(query || '').trim().slice(0, 500);
   if (!q) return { hits: [], method: 'keyword' };
+  // On Cloud Run, background work at startup can stall because CPU is only fully allocated
+  // during requests. So if the index isn't ready yet, build it now, inside this request.
+  if (embedder && !ready) await ensureIndexReady(FIRST_QUERY_WAIT_MS);
   if (ready && embedder && index) {
     try {
       const [vec] = await embedder([q], 'RETRIEVAL_QUERY');
@@ -243,6 +258,24 @@ export async function retrieve(query: string, k = RAG_TOP_K): Promise<RetrievalR
   return { hits: searchKnowledge(q, k), method: 'keyword' };
 }
 
+/**
+ * Makes sure the vector index is built, waiting up to `waitMs`. Starts a sync if none is
+ * running. Never throws; returns whether vector search is ready.
+ */
+export async function ensureIndexReady(waitMs = FIRST_QUERY_WAIT_MS): Promise<boolean> {
+  if (ready || !embedder) return ready;
+  const run = syncInFlight || syncVectorIndex();
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  await Promise.race([
+    run.catch(() => undefined),
+    new Promise((resolve) => {
+      timer = setTimeout(resolve, waitMs);
+    }),
+  ]);
+  if (timer) clearTimeout(timer);
+  return ready;
+}
+
 export function retrievalStatus() {
   return {
     method: (ready && embedder ? 'vector' : 'keyword') as RetrievalMethod,
@@ -251,6 +284,10 @@ export function retrievalStatus() {
     vectorStore: 'vectra (open-source, file-based)',
     minScore,
     passages: allChunks().length,
+    hasEmbedder: Boolean(embedder),
+    syncing: Boolean(syncInFlight),
+    syncStartedAt,
+    syncAttempts,
     lastSync,
     lastError: lastError || null,
   };
@@ -264,6 +301,8 @@ export function resetRetrieval() {
   index = null;
   ready = false;
   lastSync = null;
+  syncStartedAt = null;
+  syncAttempts = 0;
   lastError = '';
   indexDir = path.resolve(process.cwd(), KB_INDEX_DIR);
   minScore = Number(process.env.RAG_MIN_SCORE) || RAG_MIN_SCORE;
