@@ -1,0 +1,707 @@
+retrieved: 2026-11-13
+Washington, DC Airbnb Data 2026:
+Revenue & Occupancy The short answer
+ Washington, DC Airbnb Market at a Glance
+ Washington, DC is cheaper but busier than the U.S.
+average.
+Listings averaged $258 a night and were booked on 45% of available nights, against $335 and 41% for the U.S.
+average.
+Timing matters:
+in June , usually the best month, the average listing earns about twice as much as in February , usually the slowest.
+AirROI tracked 4,785 active listings in Washington, DC.
+From a year earlier, average revenue rose 3% while the number of active listings grew 6%.
+Browse the live Washington, DC Airbnb market Search by revenue, occupancy and neighborhood on an interactive map See Every Washington, DC Listing 
+ Revenue
+ How Much Do Airbnb Hosts Make in Washington, DC?
+ Gross bookings per Washington, DC listing averaged $34,393 over the 12 months to October 2026 (U.S.
+average:
+$38,485), before cleaning, platform and management costs and taxes.
+In a typical year, the average Washington, DC listing brings in $5,070 in June, its best month, and $2,570 in February, its slowest.
+May runs within 1% of June, so either can come out on top in a given year.
+The three strongest months bring in 31% of a full year's revenue, where an even calendar would give any three months 25%.
+In a typical month, a top-quarter listing earns at least 3.2 times as much as a bottom-quarter one.
+Best-in-class properties (top 10%) earn $8,340+ a month, about 2.7 times the typical property.
+Strong performers (top 25%) earn $5,210 or more, roughly $2,100 a month above the median.
+Typical properties (median) earn about $3,140 a month.
+Entry-level properties (bottom 25%) earn $1,590 or less, about half of the median.
+These are monthly figures for listings active in each month.
+The annual average above also counts listings that operated for only part of the year, so it runs below twelve times these figures.
+June earns about twice what February does
+ Average revenue per active listing, by month, October 2024 to September 2026
+ $0 $2k $4k $6k 
+ Monthly average $3,980 $5,350 $2,530 
+ Dec 24 Mar 25 Jun 25 Sep 25 Dec 25 Mar 26 Jun 26 Sep 26 
+ Each point is one month as recorded, averaged over the listings active in it.
+The best and slowest months in the text average each calendar month over the past two years, so they can differ from the highest and lowest points here.
+Washington, DC Airbnb Data by Month
+ Latest 12 months in the October 2026 data.
+October's figures are still coming in, so the rows run to September.
+May 2026 led on revenue and nightly rate;
+bookings peaked in June 2026.
+Across the past two years, June is usually the strongest month.
+Average monthly Airbnb revenue, occupancy, nightly rate, RevPAR, booking lead time and length of stay per active listing in Washington, DC, Oct 2025 to Sep 2026 Month Avg.
+Revenue Occupancy Avg.
+Nightly Rate RevPAR Booking Lead Time Avg.
+Length of Stay 
+ Oct 2025 $4,560 54.2% $259 $147 47 days 4.7 nights 
+ Nov 2025 $3,491 45.3% $245 $116 43 days 5.3 nights 
+ Dec 2025 $3,265 41.2% $240 $105 30 days 4.8 nights 
+ Jan 2026 $2,676 36.2% $235 $86 28 days 5.6 nights 
+ Feb 2026 $2,607 39.3% $231 $93 27 days 5.1 nights 
+ Mar 2026 $4,654 52.3% $260 $150 37 days 5 nights 
+ Apr 2026 $4,730 53.6% $268 $158 40 days 5 nights 
+ May 2026 $5,347 55.6% $277 $172 50 days 5 nights 
+ Jun 2026 $5,133 57.1% $274 $171 51 days 5.7 nights 
+ Jul 2026 $4,543 47.0% $259 $147 71 days 5.7 nights 
+ Aug 2026 $3,716 48.6% $241 $120 42 days 5.3 nights 
+ Sep 2026 $4,107 55.5% $242 $137 35 days 3.9 nights 
+ Averages per active listing in each month.
+Highlighted:
+the highest-revenue month of the 12.
+RevPAR is the month's revenue spread over its nights, booked or not.
+Booking lead time is the days between booking and check-in, and length of stay the nights per booking, for stays in that month.
+These are market-wide figures.
+To see what one particular Washington, DC home could earn, enter its address, bedrooms and guests in the Airbnb income calculator ;
+it compares the home with similar listings nearby.
+Profit
+ Is an Airbnb in Washington, DC Profitable?
+ Yes, when it's run well.
+The average Washington, DC Airbnb took in $34,393 in the 12 months to October 2026, and run by its owner at everyday costs, about $1,850 a month of that is left after running costs, so a home that costs less than that to own or rent makes money.
+A listing in the top quarter leaves about $3,100 a month .
+Cleaning it yourself keeps the $3,380 a year guests pay in cleaning fees, for about $2,130 a month.
+Handing the listing to a co-host at about 10% of nightly bookings still leaves about $1,590 a month.
+These amounts come before housing costs.
+Where the mortgage or rent is less each month, the difference is profit;
+a home owned outright keeps it all after property tax, home insurance and any HOA or condo fees.
+Washington, DC Airbnb Income, Expenses and Profit per Year
+ *]:border-b-0"> A year of income, running costs and what is left for housing costs for an average and a top-quarter Washington, DC Airbnb Line Average listing Top-quarter listing 
+ Money in 
+ Nightly bookings $31,013 $51,510 
+ Cleaning fees guests pay 10% of Washington, DC bookings $3,380 $5,610 
+ Gross bookings $34,393 $57,120 
+ Running costs 
+ Airbnb's fee About 14%:
+15.5% for the 90% of Washington, DC listings on Simplified Pricing, 3% for the rest −$4,910 −$8,150 
+ Cleaning and laundry Paid for by the cleaning fee;
+$0 if you clean yourself −$3,380 −$5,610 
+ Utilities and internet About 5% of bookings −$1,720 −$2,860 
+ Guest supplies Toiletries, coffee, paper goods:
+about 2% −$690 −$1,140 
+ Repairs and upkeep Including linens and small replacements:
+about 3% −$1,030 −$1,710 
+ Short-term rental insurance One policy, on top of Airbnb's free AirCover −$340 −$340 
+ Permit and registration Where one is required:
+see Washington, DC's Airbnb rules −$170 −$170 
+ Management $0 when you run it;
+co-hosts charge from about 10% of nightly bookings $0 $0 
+ Pricing and messaging tools Optional;
+Airbnb's own tools are free $0 $0 
+ Lodging taxes Added to the guest's bill and passed on $0 $0 
+ Total running costs About 26% of bookings, plus cleaning paid for by the cleaning fee −$12,240 −$19,980 
+ Left for housing costs, then profit $22,153 about $1,850 a month $37,140 about $3,100 a month 
+ Housing costs 
+ Mortgage or rent, property tax, home insurance, HOA or condo fees Depend on the home 
+ Bookings are AirROI's figures for the 4,785 active Washington, DC listings in the 12 months to October 2026.
+The average listing is the mean of all of them, including those open only part of the year;
+the top-quarter listing earns at the 75th percentile of monthly revenue, over a full year.
+Running costs are the low end of typical shares for a host who runs the listing themselves, with Washington, DC's own figures setting the Airbnb fee and the cleaning fee.
+Not included:
+one-time setup such as furniture and photos, and income tax, which running costs and mortgage interest often reduce.
+Lines are rounded, and each total adds up the lines shown.
+Estimate Your Own Washington, DC Airbnb Profit
+ The estimate starts from Washington, DC's average listing, run by its owner.
+Change how the listing performs, who runs it and who cleans to see what is left for the mortgage or rent.
+To work out the profit on one Washington, DC home, with its price, its mortgage or rent and your own costs, use the Airbnb profit calculator .
+It starts from the comparable listings around the address.
+How Washington, DC's Top Earners Get There
+ More nights booked.
+The busiest quarter of Washington, DC listings are booked on 71% or more of their nights, against 50% for the median listing.
+Ten more booked nights a year at the median rate of $195 adds about $1,940 in bookings.
+Prices that follow demand.
+Ranked by price, the top quarter charge $305 a night or more, against a median of $195.
+That is a separate ranking from the busiest quarter, so the two marks don't multiply into one listing's takings.
+For the average listing, a 10% higher rate on the nights it already books adds about $3,100 a year.
+Open for the busy months.
+In a typical year, June brings the average listing about $5,070, against $2,570 in February, so a calendar that is open and full in the busy months carries the year.
+Reviews that stand out.
+Washington, DC listings average 4.77 stars, and 40% carry Airbnb's Guest Favorite badge, which guests can filter for.
+What a listing keeps comes down to the figures this page measures:
+nightly rate, nights booked and the months it's open.
+A listing at the top-quarter mark takes in about $4,760 a month, against $2,870 for the average one.
+Occupancy
+ What Is the Airbnb Occupancy Rate in Washington, DC?
+ Washington, DC listings were booked on 45% of the nights they were open over the past year, 4 percentage points above the U.S.
+average (41%).
+In a typical year, occupancy climbs to 59% in October and falls to 37% in January.
+The busiest tenth of listings are booked about 3.4 times as often as the bottom quarter.
+Best-in-class properties (top 10%) are booked 85%+ of open nights, 35 points above the median.
+Strong performers (top 25%) fill 71% or more, roughly five nights a week.
+Typical properties (median) fill about 50% of open nights.
+Entry-level properties (bottom 25%) fill 25% or less, under two nights a week.
+October is usually the busiest month in Washington, DC, January the quietest
+ Share of open nights booked, by month, October 2024 to September 2026
+ 0% 20% 40% 60% 80% 
+ Monthly average 51% 63% 36% 
+ Dec 24 Mar 25 Jun 25 Sep 25 Dec 25 Mar 26 Jun 26 Sep 26 
+ The 12-month rate of 45% averages each listing's whole year, slow months included;
+each month here counts only the listings booked in it.
+Nightly rates
+ How Much Does an Airbnb Cost per Night in Washington, DC?
+ The average nightly rate in Washington, DC, known as ADR (average daily rate), was $258 over the past year, about 23% below the U.S.
+average of $335.
+In a typical year, rates peak in May and June at about $270 and bottom out in November and December at about $220.
+Prices span a wide range:
+the top 10% charge about 3.5 times the rate of the bottom quarter.
+Best-in-class properties (top 10%) charge $465+ a night, about 2.4 times the median.
+Strong performers (top 25%) charge $305 or more, about $110 above the median.
+Typical properties (median) charge about $195 a night.
+Entry-level properties (bottom 25%) charge $130 or less, about two-thirds of the median.
+June rates run 24% above December's
+ Average nightly rate (ADR), by month, October 2024 to September 2026
+ $0 $100 $200 $300 
+ Monthly average $245 $277 $197 
+ Dec 24 Mar 25 Jun 25 Sep 25 Dec 25 Mar 26 Jun 26 Sep 26 
+ What Is the RevPAR for Airbnb in Washington, DC?
+ RevPAR, or revenue per available night, divides a listing s income by every night it was open to book, so it rises with both price and bookings.
+In Washington, DC it averaged $120 over the past year, from about $92 in a typical February to about $169 in a typical June.
+Per open night, by tier:
+Best-in-class properties (top 10%) earn $237+ per open night, about 2.5 times the median.
+Strong performers (top 25%) earn $149 or more, about $55 a night above the median.
+Typical properties (median) earn about $95 per open night.
+Entry-level properties (bottom 25%) earn $52 or less, about 55% of the median.
+June RevPAR is about 1.8 times February's
+ Revenue per open night (RevPAR), by month, October 2024 to September 2026
+ $0 $50 $100 $150 $200 
+ Monthly average $131 $172 $86 
+ Dec 24 Mar 25 Jun 25 Sep 25 Dec 25 Mar 26 Jun 26 Sep 26 
+ The 12-month RevPAR of $120 averages each listing's whole year, slow months included;
+each month here counts only the listings booked in it.
+Seasonality
+ Best and Worst Months for Airbnb in Washington, DC
+ Washington, DC has two high seasons, March–July and October, which makes it a moderately seasonal market.
+Business is slowest from November to February, with a midsummer dip in August as well.
+Average revenue by month in Washington, DC
+ Average revenue per active listing, each calendar month averaged over the past two years
+ $0 $2k $4k $6k 
+ Monthly average $3,980 $5,070 $2,570 
+ Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec 
+ Revenue by month in Washington, DC in numbers Average monthly revenue per active listing in Washington, DC, by calendar month Month Season Revenue per listing 
+ January Low season $3,060 
+ February Low season $2,570 
+ March High season $4,650 
+ April High season $4,710 
+ May High season $5,030 
+ June High season $5,070 
+ July High season $4,460 
+ August Low season $3,640 
+ September Shoulder season $3,840 
+ October High season $4,320 
+ November Low season $3,170 
+ December Low season $3,240 
+ Average monthly Airbnb revenue, occupancy and nightly rate in Washington, DC by season Season Revenue per month Occupancy Nightly rate 
+ High season March–July, October $4,710 56% $257 
+ Shoulder season September $3,840 52% $245 
+ Low season August, November–February $3,130 44% $232 
+ How Far in Advance Do Guests Book Airbnb in Washington, DC?
+ Guests book Washington, DC stays 42 days ahead on average (about six weeks).
+July stays are booked furthest out, about 57 days ahead, and February stays closest to arrival, about 26 days.
+A typical July booking is made in mid-May.
+July stays are booked furthest ahead
+ Average days between booking and check-in, by month of stay, October 2024 to September 2026
+ 0d 20d 40d 60d 80d 
+ Monthly average 42 days 71 days 26 days 
+ Dec 24 Mar 25 Jun 25 Sep 25 Dec 25 Mar 26 Jun 26 Sep 26 
+ Permits
+ Airbnb Permits and Registration in Washington, DC
+ Yes, with a $99 two-year DLCP license for owners' primary homes only.
+Whole-home stays while the host is away are capped at 90 nights a year;
+Airbnb collects the 15.95% tax.
+66% of the 4,785 active listings in Washington, DC display a registration, permit or license number.
+The share shows what hosts display, not what local rules allow:
+it can't show whether new permits are still issued, or whether limits on nights, zones or property types apply.
+The permit, operating limits and taxes on a stay are set out in the Washington, DC Airbnb regulations , each rule linked to its official source and checked October 2026.
+Neighborhoods
+ Best Neighborhoods for Airbnb in Washington, DC
+ AirROI's area guide picks eight Washington, DC neighborhoods that draw short-term rental guests, led by Adams Morgan, Georgetown and Capitol Hill.
+The picks reflect guest appeal, not earnings data or permit eligibility, so check local permit rules for a specific address before buying.
+Best neighborhoods for Airbnb in Washington, DC Area Who it suits Landmarks nearby 
+ Adams Morgan Vibrant neighborhood known for its eclectic culture, diverse dining options, and nightlife.
+Popular with young travelers and locals seeking a lively atmosphere.
+Adams Morgan Historic District, The Line Hotel, Banneker Recreation Center, Live music venues, Diverse restaurants and cafes 
+ Georgetown Historic waterfront area with charming streets, boutique shopping, and prestigious university.
+Attracts tourists for its picturesque views and rich history.
+Georgetown Waterfront Park, C&O Canal, Dumbarton Oaks, Historic homes and mansions, Shopping on Wisconsin Avenue 
+ Capitol Hill Residential neighborhood with easy access to the U.S.
+Capitol and other government buildings.
+Ideal for business travelers and those interested in American politics.
+U.S.
+Capitol, Library of Congress, Supreme Court, Eastern Market, Historic row houses 
+ Dupont Circle Trendy and artsy neighborhood with a mix of historic architecture, parks, and embassies.
+Popular among tourists for its vibrant atmosphere and cultural attractions.
+Dupont Circle Park, The Phillips Collection, Bookstores and cafes, Embassy Row, Farmers' Market 
+ Logan Circle Historic district known for its Victorian houses and beautiful park.
+Great for families and those looking for a quieter, residential feel while still being close to downtown.
+Logan Circle Park, Historic row houses, Boutique shops and restaurants, Local art galleries, Community events 
+ Shaw Diverse neighborhood with a rich African American history and burgeoning dining scene.
+Attracts a trendy crowd looking for food and cultural experiences.
+Howard Theatre, Shaw’s Tavern, Naylor Court, Atlas Performing Arts Center, Growing food scene 
+ The Wharf New waterfront development with dining, shopping, and entertainment options.
+Ideal for tourists looking for modern amenities along the Potomac River.
+The Anthem, Waterfront Park, Dining with river views, Fishing pier, Live music events 
+ National Mall Iconic area housing the nation's monuments and museums.
+Perfect for visitors who want easy access to America's history and culture.
+Lincoln Memorial, Smithsonian Museums, Washington Monument, Tidal Basin, National World War II Memorial 
+ Area descriptions are AI-assisted from public sources and are not checked against zoning.
+Listings
+ Washington, DC Airbnb Listings by Type and Size
+ Entire homes make up 83% of listings in Washington, DC, but private rooms are a real segment:
+about one listing in seven (15%) rents out a single room.
+Apartments and condos are the most common property type at 51% , ahead of houses (36%).
+Mostly entire homes, with a private-room segment
+ Washington, DC Airbnb listings by room type
+ Entire home 83% 
+ Private room 15% 
+ Hotel room 1% 
+ Shared room 1% 
+ Room types in numbers Washington, DC Airbnb listings by room type Room type Share of listings Listings 
+ Entire home 83.0% 3,973 
+ Private room 15.0% 720 
+ Hotel room 1.1% 55 
+ Shared room 0.8% 37 
+ Listings by property type
+ Washington, DC Airbnb listings by property type
+ Apartment/Condo 51% 
+ House 36% 
+ Others 7% 
+ Hotel/Boutique 6% 
+ Cabin/Outdoor 1% 
+ Property types in numbers Washington, DC Airbnb listings by property type Property type Share of listings Listings 
+ Apartment/Condo 50.8% 2,430 
+ House 36.5% 1,746 
+ Others 6.6% 316 
+ Hotel/Boutique 6.1% 291 
+ Cabin/Outdoor 0.0% 2 
+ How Many Bedrooms Do Airbnb Listings in Washington, DC Have?
+ One-bedroom homes are the most common size in Washington, DC ( 43% of entire homes), followed by two-bedroom homes (28%).
+Shares are of the 3,840 entire homes that give a bedroom count;
+rented rooms are left out.
+Washington, DC entire homes by number of bedrooms
+ Entire homes with each number of bedrooms, of those with a bedroom count on file
+ 6% 
+ 43% 
+ 28% 
+ 13% 
+ 7% 
+ 3% 
+ Studio 1 2 3 4 5+ 
+ Bedroom counts in numbers Washington, DC entire homes by number of bedrooms Bedrooms Share of entire homes with a bedroom count Entire homes 
+ Studio 6.3% 242 
+ 1 bedroom 42.9% 1,647 
+ 2 bedrooms 27.5% 1,057 
+ 3 bedrooms 13.2% 509 
+ 4 bedrooms 6.7% 257 
+ 5+ bedrooms 3.4% 130 
+ What Each Home Size Earns in Washington, DC
+ A typical studio in Washington, DC earned $23,500 over the past year, against $73,000 for a home with five or more bedrooms.
+What each home size earns in Washington, DC Home size Listings Typical annual revenue (median) Average annual revenue Avg.
+nightly rate Occupancy 
+ Studio 242 $23,500 $25,500 $169 50% 
+ 1 bedroom 1,647 $24,200 $26,800 $189 48% 
+ 2 bedrooms 1,057 $31,300 $38,600 $275 47% 
+ 3 bedrooms 509 $44,300 $55,500 $397 45% 
+ 4 bedrooms 257 $51,000 $66,500 $515 43% 
+ 5+ bedrooms 130 $73,000 $109,000 $819 45% 
+ How Many Guests Do Airbnbs in Washington, DC Sleep?
+ Most Washington, DC listings are sized for couples and small families:
+63% sleep four guests or fewer, and just 14% take eight or more.
+Shares are of the 4,120 listings with a guest capacity on file (86% of the market).
+Washington, DC listings by guest capacity
+ Share of listings by the number of guests they sleep, of those with a capacity on file
+ 1% 
+ 23% 
+ 11% 
+ 27% 
+ 9% 
+ 12% 
+ 3% 
+ 14% 
+ 1 2 3 4 5 6 7 8+ 
+ Guest capacity in numbers Washington, DC listings by guest capacity Guest capacity Share of listings with a capacity on file Listings 
+ 1 guest 0.7% 29 
+ 2 guests 23.3% 960 
+ 3 guests 11.3% 465 
+ 4 guests 27.5% 1,131 
+ 5 guests 8.7% 358 
+ 6 guests 12.2% 500 
+ 7 guests 2.6% 105 
+ 8+ guests 13.8% 567 
+ How Washington, DC Airbnb Listings Are Set Up
+ Washington, DC hosts set up an average of 2.4 beds per listing, close to one bed per bedroom.
+About a third of listings (33%) show their exact location on the listing map;
+the rest show an approximate area.
+Photos per listing 24 
+ Beds per listing 2.4 
+ Show exact location 33% 
+ What Amenities Do Airbnb Listings in Washington, DC Offer?
+ Washington, DC listings compete on the household basics:
+the ten most common amenities are staples led by wifi, air conditioning and heating, with no pool, hot tub or free on-site parking among them.
+Share of Washington, DC listings with each common amenity
+ Wifi Nearly all 
+ Air conditioning Nearly all 
+ Heating Nearly all 
+ Smoke alarm 99% 
+ TV 94% 
+ Carbon monoxide alarm 93% 
+ Hot water 93% 
+ Hangers 89% 
+ Iron 88% 
+ Hair dryer 88% 
+ Airbnb Amenities Linked to Higher Revenue in Washington, DC
+ Listings in Washington, DC with a children's playroom earned about 2.3 times as much a year, on average, as those without:
+$77,600 against $34,000.
+The gap is smaller for a themed room (about 2.2 times as much) and arcade games (about twice as much).
+Bigger, professionally run homes tend to carry more amenities, so these gaps reflect the kind of listing as much as the feature itself.
+Revenue gap for Washington, DC listings with each amenity
+ How much more listings with the amenity earned in a year than those without, and the share of listings that have it
+ Children's playroom +128% on 0.8% of listings 
+ Theme room +124% on 0.8% of listings 
+ Arcade games +114% on 0.8% of listings 
+ Movie theater +80% on 0.5% of listings 
+ Outdoor kitchen +75% on 0.8% of listings 
+ Life size games +61% on 0.3% of listings 
+ Climbing wall +57% on 0.2% of listings 
+ EV charger +56% on 3% of listings 
+ Patio or balcony +52% on 38% of listings 
+ Waterfront +51% on 0.9% of listings 
+ Revenue by amenity in numbers Average annual revenue of Washington, DC listings with and without each amenity Amenity Listings with it Avg.
+revenue with Avg.
+revenue without Revenue gap 
+ Children's playroom 0.8% $77,600 $34,000 +128% 
+ Theme room 0.8% $76,500 $34,100 +124% 
+ Arcade games 0.8% $72,900 $34,100 +114% 
+ Movie theater 0.5% $61,500 $34,200 +80% 
+ Outdoor kitchen 0.8% $59,800 $34,200 +75% 
+ Life size games 0.3% $55,200 $34,300 +61% 
+ Climbing wall 0.2% $54,000 $34,300 +57% 
+ EV charger 3% $52,700 $33,700 +56% 
+ Patio or balcony 38% $43,800 $28,700 +52% 
+ Waterfront 0.9% $51,500 $34,200 +51% 
+ Guests
+ Who Books Airbnbs in Washington, DC?
+ Washington, DC draws mostly domestic guests:
+86% of those who left reviews live in the United States.
+No single city dominates:
+New York is the largest source outside Washington, DC, at about 6% of reviews.
+Of the 14% from abroad, the largest groups come from the United Kingdom and Canada.
+Guests speak a mix of languages:
+English leads at 59%, followed by Spanish and French.
+86% of Washington, DC guests are domestic
+ Where guests who left reviews live
+ Domestic 86% 
+ International 14% 
+ Where Washington, DC guests come from:
+top cities
+ Share of guests who left reviews
+ New York 6% 
+ Washington 4% 
+ Philadelphia 1% 
+ Chicago 1% 
+ Atlanta 1% 
+ Top origin cities in numbers Where Washington, DC guests come from:
+top cities Origin city Share of guests 
+ New York 5.8% 
+ Washington 4.3% 
+ Philadelphia 1.4% 
+ Chicago 1.3% 
+ Atlanta 1.3% 
+ Where Washington, DC guests come from:
+top countries
+ Share of guests who left reviews
+ United States 86% 
+ United Kingdom 2% 
+ Canada 1% 
+ Germany 1% 
+ Top origin countries in numbers Where Washington, DC guests come from:
+top countries Origin country Share of guests 
+ United States 86.1% 
+ United Kingdom 1.8% 
+ Canada 1.2% 
+ Germany 1.0% 
+ Languages spoken by Washington, DC guests
+ Share of guests who left reviews
+ English 59% 
+ Spanish 15% 
+ French 7% 
+ German 3% 
+ Portuguese 2% 
+ Top languages in numbers Languages spoken by Washington, DC guests Language Share of guests 
+ English 59.0% 
+ Spanish 15.3% 
+ French 6.6% 
+ German 3.2% 
+ Portuguese 2.0% 
+ What Are Airbnb Guest Ratings in Washington, DC?
+ Washington, DC Airbnbs average 4.77 stars, and 40% of listings hold Airbnb's Guest Favorite badge.
+Guests are toughest on value for money:
+it scores 4.71, against 4.88 for check-in.
+Listings here carry long review histories, about 105 reviews each on average.
+Check-in scores highest in Washington, DC;
+value is lowest
+ Average guest rating out of 5 by category;
+the bars start at 4.0
+ Accuracy 4.81 
+ Cleanliness 4.79 
+ Communication 4.87 
+ Location 4.75 
+ Check-in 4.88 
+ Value 4.71 
+ Category scores in numbers Washington, DC guest ratings by category Category Average rating (out of 5) 
+ Accuracy 4.81 
+ Cleanliness 4.79 
+ Communication 4.87 
+ Location 4.75 
+ Check-in 4.88 
+ Value 4.71 
+ Booking patterns
+ How Guests Book in Washington, DC:
+Stays, Rules and Fees
+ About seven in ten Washington, DC listings are open to guests more than 180 days a year, but only 32% are booked or blocked that many days.
+The most common booked-or-blocked total is 91 to 180 days a year, covering 29% of listings;
+blocked nights include any the host closes off.
+Days a year Washington, DC listings are open to guests
+ Share of listings by days a year
+ 271-366 days 40% 
+ 181-270 days 30% 
+ 91-180 days 24% 
+ 31-90 days 6% 
+ 1-30 days 1% 
+ Open days in numbers Days a year Washington, DC listings are open to guests Days a year Share of listings Listings 
+ 271-366 days 40.1% 1,917 
+ 181-270 days 29.5% 1,413 
+ 91-180 days 24.0% 1,147 
+ 31-90 days 6.1% 293 
+ 1-30 days 0.3% 15 
+ Days a year Washington, DC listings are booked or blocked
+ Share of listings by days a year
+ 271-366 days 7% 
+ 181-270 days 24% 
+ 91-180 days 29% 
+ 31-90 days 23% 
+ 1-30 days 16% 
+ Booked or blocked days in numbers Days a year Washington, DC listings are booked or blocked Days a year Share of listings Listings 
+ 271-366 days 7.2% 345 
+ 181-270 days 24.4% 1,167 
+ 91-180 days 29.4% 1,407 
+ 31-90 days 22.7% 1,085 
+ 1-30 days 16.3% 781 
+ What Is the Average Length of Stay for Airbnb in Washington, DC?
+ Bookings in Washington, DC average 4.5 to 6 nights depending on the month, longest in June and shortest in September.
+Listings took about 28 bookings each over the year, some 130,000 in all.
+Check-in is split almost evenly between 3 p.m.
+and 4 p.m., with check-out usually at 11 a.m.
+Average length of stay by month in Washington, DC
+ Average nights per booking, by month of stay
+ 0 2 4 6 
+ Average 5.2 nights 6 nights 4.5 nights 
+ Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec 
+ Two-year average by calendar month.
+Washington, DC Airbnb Minimum Stay Requirements
+ About six in ten listings in Washington, DC accept stays of one or two nights.
+A smaller group, 12%, takes only stays of 30 nights or more.
+Minimum stay set by Washington, DC listings
+ Share of listings by the shortest stay they accept, from one night to 30 or more
+ 1 Night 25% 1,180 listings 
+ 2 Nights 36% 1,721 listings 
+ 3 Nights 13% 642 listings 
+ 4-6 Nights 5% 252 listings 
+ 7-29 Nights 8% 405 listings 
+ 30+ Nights 12% 584 listings 
+ What Cancellation Policies Do Airbnb Hosts Use in Washington, DC?
+ Moderate is the most common cancellation policy in Washington, DC, used by 33% of listings;
+it refunds guests in full if they cancel at least five days before check-in.
+Nearly half of listings offer Flexible or Moderate terms and 44% use Firm or stricter ones, so neither camp dominates.
+Cancellation policies of Washington, DC listings, from most to least flexible
+ Share of listings by the policy they use
+ Flexible 16% 748 listings 
+ Moderate 33% 1,561 listings 
+ Limited 8% 359 listings 
+ Firm 31% 1,489 listings 
+ Strict 11% 536 listings 
+ Super Strict 30 Days 2% 83 listings 
+ Super Strict 60 Days 1% 9 listings 
+ How Much Are Airbnb Cleaning Fees in Washington, DC?
+ About nine in ten Washington, DC listings charge a cleaning fee.
+The typical fee is $120 ;
+a handful of extreme values pull the simple average far above that, so the median is the better guide.
+Spread over the average stay of about five nights, that adds roughly $25 a night to what guests pay.
+For listings that charge one, cleaning fees make up about 10% of gross revenue.
+Median cleaning fee $120 
+ Listings charging a fee 89.2% 
+ Share of gross revenue 9.8% 
+ Top earners
+ Top-Earning Airbnbs and Hosts in Washington, DC
+ The top-grossing Airbnb in Washington, DC, an eight-bedroom home, took in $538,000 over the past year, about 16 times the city's average of $34,400.
+Five of the six listings below have five or more bedrooms;
+the other one has four bedrooms.
+Sleeps 28 · 8BR/7BA Mansion · Holiday Reunions Entire home · 8 bedrooms Rated 4.93 Revenue $538,112 
+ Occupancy 72.6% 
+ Daily rate $1,911 
+ Luxury 12-BR DC Mansion- Rooftop Patio -Sleeps 28 Entire home · 12 bedrooms Rated 5.00 Revenue $478,039 
+ Occupancy 77.9% 
+ Daily rate $1,577 
+ Historic-7BR/4.5BA-Walk to DC Sights + Parking Entire home · 7 bedrooms Rated 4.98 Revenue $388,887 
+ Occupancy 76.8% 
+ Daily rate $1,332 
+ Beautiful new Georgetown home Entire home · 4 bedrooms Rated 5.00 Revenue $362,747 
+ Occupancy 62.0% 
+ Daily rate $1,563 
+ Luxe 7-BR Victorian Castle in the Nation's Capital Entire home · 7 bedrooms Rated 4.89 Revenue $340,373 
+ Occupancy 75.8% 
+ Daily rate $1,247 
+ The Gilded Manor | Luxe Mansion @ DuPont Circle Entire home · 5 bedrooms Rated 5.00 Revenue $305,883 
+ Occupancy 47.5% 
+ Daily rate $2,038 
+ Who Are the Top Airbnb Hosts in Washington, DC?
+ Sojourn is the top-grossing host in Washington, DC, with $7.07 million in bookings across 196 listings over the past year.
+Hosting here is fragmented:
+the ten top-grossing hosts run just 9% of the market's 4,785 listings.
+Per listing, a smaller operator earns more:
+Adam grossed $197,000 per listing, about 5.5 times Sojourn's $36,100.
+Top Airbnb hosts in Washington, DC by revenue # Host Listings Gross revenue Per listing Avg.
+rating 
+ Sojourn 196 $7,074,894 $36,096 4.76/5 
+ Lara Home Sweet City 86 $5,500,243 $63,956 4.85/5 
+ Stay Bubo Vacation Rentals 38 $2,242,149 $59,004 4.76/5 
+ 4 Jay 23 $1,821,282 $79,186 4.66/5 
+ 5 Travel Luxe 10 $1,801,122 $180,112 4.92/5 
+ 6 Douglas 23 $1,793,386 $77,973 4.75/5 
+ 7 Adam 7 $1,379,480 $197,069 4.89/5 
+ 8 Marsh 16 $1,374,397 $85,900 4.87/5 
+ 9 Corporate Housing 13 $1,297,103 $99,777 4.75/5 
+ 10 District Cottage 13 $1,229,288 $94,561 4.85/5 
+ Who Are the Airbnb Hosts in Washington, DC?
+ Professional management companies run 15% of Washington, DC listings and owners run the rest, though 37% of listings have a co-host.
+Superhosts run 54% of listings.
+Airbnb's Simplified Pricing, where the host pays the whole service fee and guests see one price with no separate Airbnb charge, covers 90% of listings.
+Superhosts 53.8% 
+ Professional management 14.6% 
+ Cohosted listings 37.2% 
+ Instant Book enabled 30.3% 
+ Simplified Pricing 90.1% 
+ Largest Airbnb Management Companies in Washington, DC
+ 48 management companies run five or more active Airbnb listings in Washington, DC, and companies run 16% of its Airbnb homes.
+Sojourn DC is the largest, with 210 listings and an average guest rating of 4.79;
+the next largest are Home Sweet City , Moonis And Rabia , RoomPicks and Stay Bubo .
+Among the five largest, Home Sweet City's homes rate highest, at 4.85.
+The five largest run 9% of Washington, DC's Airbnb homes
+ Share of Washington, DC's Airbnb homes each company runs as host or co-host
+ Sojourn DC 4% · 210 
+ Home Sweet City 2% · 88 
+ Moonis And Rabia 1% · 49 
+ RoomPicks 1% · 47 
+ Stay Bubo 1% · 39 
+ All other listings 91% 
+ Listings each company runs as host or co-host, 12 months to October 2026.
+Guest ratings average each listing's Airbnb rating, weighted by its reviews.
+See all 48 companies ranked in the Washington Airbnb management ranking, with how their homes earn against similar ones.
+Nearby markets
+ Washington, DC vs.
+Nearby Airbnb Markets
+ Washington, DC earns about as much per listing as Arlington, the top earner of the eight nearby markets in the table, all within 11 km.
+Airbnb markets near Washington, DC:
+distance, revenue, nightly rate and occupancy Market Listings Avg.
+annual revenue Avg.
+nightly rate Occupancy 
+ Hyattsville 4 km 70 $21,449 $184 42% 
+ Takoma Park 6 km 62 $23,500 $171 46% 
+ Adelphi 8 km 34 $6,311 $66 42% 
+ Capitol Heights 8 km 32 $15,751 $142 45% 
+ College Park 8 km 41 $11,749 $140 45% 
+ Hillandale 10 km 31 $9,909 $109 41% 
+ Silver Spring 10 km 300 $14,901 $156 40% 
+ Arlington 11 km 993 $33,209 $274 46% 
+ Markets Similar to Washington, DC
+ Markets elsewhere in the United States with a similar nightly rate and occupancy to Washington, DC:
+Swannanoa Airbnb data NC · $265/night · 45.3% 
+ Litchfield Park Airbnb data AZ · $252/night · 45.7% 
+ Tustin Airbnb data CA · $253/night · 45.1% 
+ Queen Creek Airbnb data AZ · $251/night · 45.3% 
+ Mount Shasta Airbnb data CA · $267/night · 45.4% 
+ Cody Airbnb data WY · $264/night · 45.8% 
+ FAQ
+ Washington, DC Airbnb FAQ
+ How much do Airbnb hosts make in Washington, DC? An active Washington, DC Airbnb grossed $34,393 on average in the 12 months to October 2026, according to AirROI's tracking of 4,785 active listings.
+That is before cleaning, management, taxes and financing.
+Busier, better-run listings do far better:
+the top quarter took in $5,210 or more in a typical month.
+How much can I make on Airbnb in Washington, DC? It depends most on the home's size, location and how it's run.
+The middle half of Washington, DC listings earn between $1,590 and $5,210 in a typical month, and the top tenth $8,340 or more.
+For one home, enter its address and bedroom count in the Airbnb calculator :
+it compares the home with similar listings nearby.
+What is the average Airbnb occupancy rate in Washington, DC? Listings in Washington, DC were booked on 45% of available nights over the past year.
+That compares with 41% for the U.S.
+average.
+October is usually the busiest month.
+How much does an Airbnb cost per night in Washington, DC? The average booked night in Washington, DC cost $258 before fees.
+Half of listings charge between $130 and $305, so bedroom count and location move the price more than the average suggests.
+Do you need a permit for an Airbnb in Washington, DC? Yes, if you own and live in the home:
+Washington, DC homeowners can host short stays with a $99 two-year license from the Department of Licensing and Consumer Protection, and whole-home stays while away are capped at 90 nights a year.
+The Washington, DC Airbnb regulations set out the permit, its cost, the taxes on a stay and the operating limits, each linked to its official source.
+Is Airbnb profitable in Washington, DC? Yes, when it's run well.
+The average Washington, DC Airbnb grossed $34,393 in the 12 months to October 2026, 11% below the U.S.
+average of $38,485.
+Run by its owner, with the cleaning fee covering the cleaner and everyday costs for Airbnb's fee, utilities, supplies, upkeep and insurance, $22,153 a year (about $1,850 a month) is left before the mortgage or rent.
+A home that costs less than that to own or rent makes a profit, and a listing at the top-quarter mark leaves about $3,100 a month.
+Check a specific home in the Airbnb estimator .
+When is Airbnb peak season in Washington, DC? June usually pays best, averaging $5,070 per active listing over the past two years, and February usually pays least.
+The month-by-month table above shows how the latest 12 months played out.
+What is the Airbnb RevPAR in Washington, DC? Each night a Washington, DC listing was open to book earned $120 on average over the past year, booked or not.
+That figure, revenue per available night (RevPAR), folds price and occupancy into one number;
+the top 10% of listings made $237 or more.
+How far in advance do guests book Airbnbs in Washington, DC? Washington, DC stays were booked 42 days (about six weeks) before arrival on average over the past year, so most of a month is booked well before it starts.
+How long do guests stay at Airbnbs in Washington, DC? The average Washington, DC Airbnb stay lasts about five nights.
+A listing took 28 reservations over the year on average.
+How are Airbnbs in Washington, DC rated? Guests rate Washington, DC Airbnbs 4.77 out of 5 on average.
+Guests score check-in highest and value lowest.
+What are the best neighborhoods for Airbnb in Washington, DC? Adams Morgan, Georgetown and Capitol Hill draw the most short-term rental interest in Washington, DC.
+The neighborhood guide explains what brings guests to each.
+How many Airbnbs are there in Washington, DC? AirROI counted 4,785 active Airbnb listings in Washington, DC as of October 2026.
+The closest tracked market is Hyattsville , 4 km away.
+How much are Airbnb cleaning fees in Washington, DC? In Washington, DC, about nine in ten listings add a cleaning fee.
+The median fee is $120;
+a handful of extreme values pull the simple average far above that, so the median is the better guide.
+Method
+ About This Data
+ Figures on this page cover 4,785 active Airbnb listings in Washington, DC from November 2025 to October 2026 (trailing twelve months).
+AirROI refreshes them monthly from listing-level booking and calendar data covering 20+ million properties worldwide.
+Money figures are in U.S.
+dollars.
+Annual revenue averages every listing active during the period, including those listed for only part of it;
+monthly figures average the listings active in each month;
+the tier lists show the spread.
+Neighborhood descriptions are AI-assisted.
+See the methodology for definitions.
+Cite this data
+ AirROI.
+(2026).
+Washington, DC Airbnb market data, November 2025–October 2026 [Data set].
+https://www.airroi.com/airbnb-data/united-states/district-of-columbia/washington
+ Copy citation 
+ Embed these numbers
+ HTML embed code for Washington, DC Airbnb data div style= font-family:system-ui,sans-serif;border:1px solid #e5e7eb;border-radius:8px;padding:12px 14px;max-width:440px;line-height:1.5 a href= https://www.airroi.com/airbnb-data/united-states/district-of-columbia/washington style= font-weight:600 Washington, DC Airbnb data /a :
+$34,393/yr avg.
+revenue, 45.4% occupancy, $258/night (Nov 2025 – Oct 2026).
+Source:
+a href= https://www.airroi.com/airbnb-data/world AirROI /a /div Copy embed code 
+ Need this programmatically? The same metrics are available through the AirROI Airbnb Data API and bulk downloads in the data portal .
+Reviewed by
+ Jun Zhou 
+ Founder, AirROI
+ LinkedIn More from Jun 
+ Jun Zhou founded AirROI and has spent decades in the short-term rental industry, working on big data analytics, machine learning and revenue management.
+The platform he built now powers tens of thousands of hosts, property managers and investors.
+Academics, researchers, financial institutions, government councils and tourism boards use AirROI’s data to inform their research, planning and investment decisions.
+LinkedIn More from Jun 
+ Get This Data by API
+ The figures on this page come from the AirROI Airbnb Data API , which serves listing-level revenue, occupancy and nightly-rate data for markets like Washington in more than 190 countries.
+Get API Access

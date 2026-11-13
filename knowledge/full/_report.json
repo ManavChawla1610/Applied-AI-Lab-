@@ -1,0 +1,144 @@
+{
+  "at": "2026-11-13T21:36:18.936Z",
+  "results": [
+    {
+      "id": "01",
+      "title": "Operating a Short-Term Rental in the District of Columbia",
+      "url": "https://dlcp.dc.gov/page/operating-short-term-rental-district-columbia",
+      "format": "html",
+      "ok": true,
+      "passages": 0
+    },
+    {
+      "id": "01b",
+      "title": "Short-Term Rentals program page",
+      "url": "https://dlcp.dc.gov/node/1616736",
+      "format": "html",
+      "ok": true,
+      "passages": 0
+    },
+    {
+      "id": "02",
+      "title": "DC Short-Term Rental Guide",
+      "url": "https://dlcp.dc.gov/sites/default/files/dc/sites/DLCP/publication/attachments/Short-Term-Rental-Guide_0.pdf",
+      "format": "pdf",
+      "ok": false,
+      "passages": 0,
+      "error": "HTTP 404"
+    },
+    {
+      "id": "03",
+      "title": "DC Code Title 30 Chapter 2 (full chapter)",
+      "url": "https://code.dccouncil.gov/us/dc/council/code/titles/30/chapters/2/index.full.html",
+      "format": "html",
+      "ok": true,
+      "passages": 0
+    },
+    {
+      "id": "03e",
+      "title": "§ 30-201.10 Penalties",
+      "url": "https://code.dccouncil.gov/us/dc/council/code/sections/30-201.10",
+      "format": "html",
+      "ok": true,
+      "passages": 0
+    },
+    {
+      "id": "04",
+      "title": "Vacation Rental Exemption Application Form",
+      "url": "https://dlcp.dc.gov/sites/default/files/dc/sites/DLCP/publication/attachments/Vacation-Rental-Exemption-Application-Form_Blank__0.pdf",
+      "format": "pdf",
+      "ok": true,
+      "passages": 0
+    },
+    {
+      "id": "04a",
+      "title": "DC short-term rental final rulemaking notice (14 DCMR Chapter 99)",
+      "url": "https://www.dcregs.dc.gov/Common/NoticeDetail.aspx?NoticeId=N116540",
+      "format": "html",
+      "ok": false,
+      "passages": 0,
+      "error": "page had too little text (it may need JavaScript to load)"
+    },
+    {
+      "id": "05",
+      "title": "Short-Term Rental Regulation Amendment Act of 2026 announcement",
+      "url": "https://dlcp.dc.gov/node/1821406",
+      "format": "html",
+      "ok": true,
+      "passages": 0
+    },
+    {
+      "id": "06",
+      "title": "Taxable and non-taxable services",
+      "url": "https://otr.cfo.dc.gov/page/taxable-and-non-taxable-services",
+      "format": "html",
+      "ok": true,
+      "passages": 0
+    },
+    {
+      "id": "06a",
+      "title": "OTR Tax Notice 2023-01",
+      "url": "https://otr.cfo.dc.gov/sites/default/files/dc/sites/otr/release_content/attachments/OTR_Notice-Temporary_Sales_Tax_Increase_2023_01.pdf",
+      "format": "pdf",
+      "ok": true,
+      "passages": 0
+    },
+    {
+      "id": "06b",
+      "title": "Marketplace facilitators must collect DC sales taxes",
+      "url": "https://otr.cfo.dc.gov/release/effective-april-1-marketplace-facilitators-must-collect-district-sales-taxes-its-sellers",
+      "format": "html",
+      "ok": false,
+      "passages": 0,
+      "error": "HTTP 403"
+    },
+    {
+      "id": "07",
+      "title": "Topic No. 415 Renting Residential and Vacation Property",
+      "url": "https://www.irs.gov/taxtopics/tc415.html",
+      "format": "html",
+      "ok": true,
+      "passages": 0
+    },
+    {
+      "id": "09",
+      "title": "Airbnb service fees for home hosts",
+      "url": "https://www.airbnb.com/support/article/384",
+      "format": "html",
+      "ok": true,
+      "passages": 0
+    },
+    {
+      "id": "10",
+      "title": "AirCover for Hosts",
+      "url": "https://www.airbnb.com/help/article/3733",
+      "format": "html",
+      "ok": true,
+      "passages": 0
+    },
+    {
+      "id": "11",
+      "title": "Occupancy tax collection and remittance in DC",
+      "url": "https://www.airbnb.com/help/article/2300",
+      "format": "html",
+      "ok": true,
+      "passages": 0
+    },
+    {
+      "id": "12",
+      "title": "Washington DC Airbnb Market Data 2026",
+      "url": "https://www.airroi.com/airbnb-data/united-states/district-of-columbia/washington",
+      "format": "html",
+      "ok": true,
+      "passages": 0
+    },
+    {
+      "id": "13",
+      "title": "Enforcement action: interest liens and collections",
+      "url": "https://dob.dc.gov/page/enforcement-action",
+      "format": "html",
+      "ok": true,
+      "passages": 0
+    }
+  ]
+}
