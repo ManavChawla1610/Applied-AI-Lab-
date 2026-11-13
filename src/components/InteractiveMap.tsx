@@ -50,12 +50,9 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
     // Zoom control at bottom-right per design spec
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-    // Clean, light basemap (muted colours, fewer labels) so the price pins stand out.
-    // Tile style lives in config/map.ts.
+    // OpenStreetMap tiles (config/map.ts), softened with CSS so the price pins stand out.
     L.tileLayer(MAP_TILE_URL, {
       maxZoom: 19,
-      subdomains: 'abcd',
-      detectRetina: true,
       attribution: MAP_ATTRIBUTION,
     }).addTo(map);
     map.attributionControl.setPrefix(false);
