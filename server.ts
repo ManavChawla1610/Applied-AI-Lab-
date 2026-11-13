@@ -37,8 +37,8 @@ import {
   verifyReplyNumbers,
   verifyStep1CurrencyAndPercent,
 } from './src/lib/aiVerify.ts';
-import { listSources } from './lib/rag.ts';
-import { ensureIndexReady, retrieve, retrievalStatus, startRetrieval } from './lib/vectorStore.ts';
+import { allChunks, fullDocumentsReport, listSources } from './lib/rag.ts';
+import { ensureFullKnowledge, ensureIndexReady, retrieve, retrievalStatus, startRetrieval } from './lib/vectorStore.ts';
 import type { RetrievalMethod } from './lib/vectorStore.ts';
 import { CitationRegistry, applyCitations, citationFromHit, toolPayload } from './lib/citations.ts';
 import { renderAboutPage, robotsTxt, sitemapXml } from './lib/seoPages.ts';
@@ -705,17 +705,35 @@ app.get('/api/kb/search', async (req: Request, res: Response): Promise<void> => 
 });
 
 app.get('/api/kb/status', async (_req: Request, res: Response) => {
-  // Opening the status page also finishes building the index (waits up to 25 s), so it
-  // doubles as a health check: "vector" means semantic search is live.
+  // Opening the status page also finishes the knowledge base: builds the index, fetches the
+  // full official pages and embeds them (waits up to ~55 s). Doubles as a health check.
   await ensureIndexReady(25_000);
+  await ensureFullKnowledge(30_000);
   res.json(retrievalStatus());
 });
 
 app.get('/api/kb/sources', (_req: Request, res: Response) => {
+  // Every document in the library, with what is indexed for it (summary and/or full text).
+  const chunks = allChunks();
+  const report = fullDocumentsReport();
+  const summaryFiles = new Set(chunks.filter((c) => c.kind === 'summary').map((c) => c.id.split('#')[0]));
   res.json({
     sources: listSources()
       .filter((s) => s.use_in_rag === 'yes')
-      .map((s) => ({ id: s.id, title: s.title, publisher: s.publisher, url: s.url, authority: s.authority })),
+      .map((s) => {
+        const full = report?.results.find((r) => r.id === s.id);
+        return {
+          id: s.id,
+          title: s.title,
+          publisher: s.publisher,
+          url: s.url,
+          authority: s.authority,
+          format: s.format,
+          summary: summaryFiles.has(s.file),
+          fullTextPassages: chunks.filter((c) => c.kind === 'full_text' && c.sourceId === s.id).length,
+          fullTextStatus: !full ? 'pending' : full.ok ? 'loaded' : 'unavailable',
+        };
+      }),
   });
 });
 
