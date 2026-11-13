@@ -9,7 +9,7 @@
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { resetKnowledgeBase, allChunks } from '../../lib/rag.ts';
+import { resetKnowledgeBase, allChunks, refreshFullDocuments, fullDocumentsReport } from '../../lib/rag.ts';
 import {
   ensureIndexReady,
   resetRetrieval,
@@ -20,6 +20,7 @@ import {
 } from '../../lib/vectorStore.ts';
 import { CitationRegistry, applyCitations } from '../../lib/citations.ts';
 import { fakeEmbedder, fakeEmbeddedTexts, resetFakeCounters } from './fakeEmbedder.ts';
+import { ensureFullKnowledge } from '../../lib/vectorStore.ts';
 
 process.env.KB_FETCH_FULL_DOCS = 'false';
 
@@ -129,6 +130,39 @@ async function main() {
   const ok = await ensureIndexReady(300);
   check(!ok && Date.now() - t0 < 1000, 'waiting for a stuck index gives up after the time limit');
   void stuck;
+
+  // 6d. Full official pages: HTML and PDF are fetched in parallel, indexed and reported;
+  //     a blocked page is skipped without breaking the rest.
+  resetRetrieval();
+  resetKnowledgeBase();
+  await startRetrieval({ embedder: fakeEmbedder, dir: fs.mkdtempSync(path.join(os.tmpdir(), 'kb-index-')), minScore: 0.05 });
+  const pdfBytes = fs.readFileSync('/tmp/sample.pdf');
+  const words = Array.from({ length: 400 }, (_, i) => `word${i % 50}`).join(' ');
+  const fakeSite: typeof fetch = (async (url: any) => {
+    const u = String(url);
+    if (u.includes('airbnb.com')) return new Response('<html><body>Loading…</body></html>', { status: 200 });
+    if (u.endsWith('.pdf') || u.includes('/sites/default/files/')) return new Response(pdfBytes, { status: 200 });
+    if (u.includes('otr.cfo.dc.gov/page/taxable')) return new Response('blocked', { status: 403 });
+    return new Response(`<html><head><style>x{}</style></head><body><nav>menu</nav><main><h1>Rules</h1><p>Hosts must hold a license. ${words}</p></main></body></html>`, { status: 200 });
+  }) as typeof fetch;
+  process.env.KB_FETCH_FULL_DOCS = 'true';
+  await refreshFullDocuments(fakeSite);
+  process.env.KB_FETCH_FULL_DOCS = 'false';
+  const report = fullDocumentsReport()!;
+  const okIds = report.results.filter((r) => r.ok).map((r) => r.id);
+  check(report.results.length >= 14, `all listed HTML and PDF sources attempted (${report.results.length})`);
+  check(report.results.some((r) => r.format === 'pdf' && r.ok), 'PDF sources are read and indexed');
+  check(report.results.some((r) => r.id === '06' && !r.ok && /403/.test(r.error || '')), 'blocked page reported with its error');
+  check(report.results.filter((r) => /airbnb\.com/.test(r.url)).every((r) => !r.ok), 'JavaScript-only pages are skipped, not indexed as junk');
+  const fullChunks = allChunks().filter((c) => c.kind === 'full_text');
+  check(fullChunks.length > 0 && fullChunks.every((c) => okIds.includes(c.sourceId)), `full-text passages added (${fullChunks.length})`);
+  check(!fullChunks.some((c) => /menu|x\{\}/.test(c.text)), 'navigation and styles stripped from page text');
+  await ensureFullKnowledge(10_000);
+  const st = retrievalStatus();
+  check(st.method === 'vector' && st.fullTextPassages === fullChunks.length && st.lastSync!.total === allChunks().length,
+    `full-text passages embedded into the vector index (${st.lastSync!.total} total)`);
+  const pdfHit = await retrieve('proof of work outside the District for the vacation rental exemption', 5);
+  check(pdfHit.hits.some((h) => h.chunk.kind === 'full_text'), 'search returns exact full-text passages');
 
   // 7. Citations: renumber by first use, drop invented refs, strip SOURCES line
   const reg = new CitationRegistry();

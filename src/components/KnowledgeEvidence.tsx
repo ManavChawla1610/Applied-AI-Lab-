@@ -9,8 +9,8 @@
  *  - KnowledgeSearch: search the document library directly, no AI in between.
  */
 
-import React, { useState } from 'react';
-import { ExternalLink, FileText, Search, X, ShieldCheck, Loader2 } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { ExternalLink, FileText, Search, X, ShieldCheck, Loader2, Library, ChevronDown } from 'lucide-react';
 
 export interface Citation {
   n: number;
@@ -179,6 +179,116 @@ export const EvidenceSheet: React.FC<{ citation: Citation | null; onClose: () =>
   );
 };
 
+export interface LibrarySource {
+  id: string;
+  title: string;
+  publisher: string;
+  url: string;
+  authority: string;
+  format: string;
+  summary: boolean;
+  fullTextPassages: number;
+  fullTextStatus: 'pending' | 'loaded' | 'unavailable';
+}
+
+/** Every document the assistant can answer from, grouped by type, each linking to the original. */
+export const SourceLibrary: React.FC = () => {
+  const [sources, setSources] = useState<LibrarySource[] | null>(null);
+  const [open, setOpen] = useState(false);
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/kb/sources')
+      .then((r) => r.json())
+      .then((d) => !cancelled && setSources(Array.isArray(d.sources) ? d.sources : []))
+      .catch(() => !cancelled && setFailed(true));
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (failed) return null;
+  if (!sources) {
+    return (
+      <div className="flex items-center gap-2 text-[11px] text-gray-500">
+        <Loader2 className="w-3 h-3 animate-spin" /> Loading the document list…
+      </div>
+    );
+  }
+
+  const groups: { label: string; items: LibrarySource[] }[] = [];
+  const groupOf = (s: LibrarySource) => {
+    const a = authorityLabel(s.authority).text;
+    if (a.startsWith('Official') || a === 'Proposal, not law') return 'DC and federal government';
+    if (a === 'Airbnb policy') return 'Airbnb';
+    return 'Market data';
+  };
+  for (const s of sources) {
+    const label = groupOf(s);
+    let g = groups.find((x) => x.label === label);
+    if (!g) groups.push((g = { label, items: [] }));
+    g.items.push(s);
+  }
+  const fullCount = sources.filter((s) => s.fullTextPassages > 0).length;
+
+  return (
+    <div className="rounded-2xl border border-gray-200">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        className="w-full flex items-center justify-between gap-2 px-3.5 py-3 text-left cursor-pointer"
+      >
+        <span className="flex items-center gap-2">
+          <Library className="w-4 h-4 text-gray-700" />
+          <span className="text-sm font-semibold text-gray-900">Sources the assistant uses ({sources.length})</span>
+        </span>
+        <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+      {open && (
+        <div className="px-3.5 pb-3.5 space-y-3">
+          <p className="text-[11px] text-gray-500 leading-relaxed">
+            Answers come only from these documents.{' '}
+            {fullCount > 0
+              ? `${fullCount} are searched word for word; the rest through our summary of the page.`
+              : 'Each is searched through our summary of the page; full pages are added as they load.'}
+          </p>
+          {groups.map((g) => (
+            <div key={g.label} className="space-y-1.5">
+              <div className="text-[10px] font-semibold uppercase tracking-wide text-gray-500">{g.label}</div>
+              {g.items.map((s) => {
+                const auth = authorityLabel(s.authority);
+                return (
+                  <a
+                    key={s.id}
+                    href={s.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group flex items-start justify-between gap-2 rounded-xl px-2.5 py-2 hover:bg-gray-50"
+                  >
+                    <span className="min-w-0">
+                      <span className="block text-[12px] font-medium text-gray-900 leading-snug group-hover:underline">
+                        {s.title}
+                      </span>
+                      <span className="block text-[10px] text-gray-500">
+                        {s.publisher}
+                        {s.format === 'pdf' ? ' · PDF' : ''} · {auth.text}
+                        {s.fullTextPassages > 0 ? ' · full text' : s.summary ? ' · summary' : ' · loading'}
+                      </span>
+                    </span>
+                    <ExternalLink className="w-3 h-3 text-gray-400 shrink-0 mt-1" />
+                  </a>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const SEARCH_EXAMPLES = ['Penalty for hosting without a license', 'Insurance requirement', 'Lodging tax rate', '90-night cap exemptions'];
 
 /** Search the document library directly and read the matching passages. */
@@ -257,6 +367,7 @@ export const KnowledgeSearch: React.FC = () => {
                 </button>
               ))}
             </div>
+            <SourceLibrary />
           </div>
         )}
         {loading && (

@@ -51,8 +51,11 @@ export interface SourceRow {
 export const KNOWLEDGE_DIR = path.resolve(process.cwd(), 'knowledge');
 export const FULL_TEXT_CHUNK_WORDS = 160;
 export const FULL_TEXT_OVERLAP_WORDS = 40;
+// Upper bound per source (~7,000 words) so one very long page can't blow the embedding quota.
+// Each DC Code section that matters (e.g. § 30-201.10 penalties) is also listed on its own.
+export const MAX_FULL_TEXT_PASSAGES_PER_SOURCE = 60;
 export const FULL_DOC_REFRESH_MS = 24 * 60 * 60 * 1000;
-export const FETCH_TIMEOUT_MS = 15000;
+export const FETCH_TIMEOUT_MS = 12000;
 // Curated summaries are cleaner than raw web pages, so they rank slightly higher on ties.
 export const SUMMARY_BOOST = 1.15;
 const ASSISTANT_GUIDANCE_HEADING = /^how to answer users$/i;
@@ -205,6 +208,7 @@ export function chunkFullText(row: SourceRow, text: string, retrieved: string): 
       text: piece,
     });
     if (start + FULL_TEXT_CHUNK_WORDS >= words.length) break;
+    if (chunks.length >= MAX_FULL_TEXT_PASSAGES_PER_SOURCE) break;
   }
   return chunks;
 }
@@ -323,47 +327,87 @@ export function loadKnowledgeBase(dir = KNOWLEDGE_DIR) {
   console.log(`[RAG] Loaded ${summaryChunks.length} summary chunks from ${files.length} files; ${sources.length} sources listed.`);
 }
 
+export interface FullDocResult {
+  id: string;
+  title: string;
+  url: string;
+  format: string;
+  ok: boolean;
+  passages: number;
+  error?: string;
+}
+
+let fullFetchReport: { at: string; results: FullDocResult[] } | null = null;
+
+/** Extracts plain text from a PDF (DLCP guide, exemption form, OTR notice). */
+async function pdfToText(buf: ArrayBuffer): Promise<string> {
+  const { extractText } = await import('unpdf');
+  const { text } = await extractText(new Uint8Array(buf), { mergePages: true });
+  return String(text || '').replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
+}
+
+async function fetchOne(row: SourceRow, fetchImpl: typeof fetch, today: string): Promise<{ result: FullDocResult; chunks: KnowledgeChunk[] }> {
+  const base = { id: row.id, title: row.title, url: row.url, format: row.format };
+  try {
+    const res = await fetchImpl(row.url, {
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; DCHostCalculator/1.0; knowledge refresh)',
+        Accept: row.format === 'pdf' ? 'application/pdf' : 'text/html,application/xhtml+xml',
+      },
+      redirect: 'follow',
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const text = row.format === 'pdf' ? await pdfToText(await res.arrayBuffer()) : htmlToText(await res.text());
+    if (text.split(/\s+/).length < 60) throw new Error('page had too little text (it may need JavaScript to load)');
+    const chunks = chunkFullText(row, text, today);
+    return { result: { ...base, ok: true, passages: chunks.length }, chunks };
+  } catch (err) {
+    const error = String((err as Error)?.message || err).slice(0, 140);
+    console.warn(`[RAG] Full text unavailable for ${row.id} (${row.url}): ${error}`);
+    return { result: { ...base, ok: false, passages: 0, error }, chunks: [] };
+  }
+}
+
 /**
- * Fetches the full HTML sources marked use_in_rag = yes and adds them to the index.
- * Runs in the background; failures are logged and the bundled summaries still answer.
- * Set KB_FETCH_FULL_DOCS=false to turn this off.
+ * Fetches the full official pages and PDFs marked use_in_rag = yes, in parallel, and adds
+ * them to the knowledge base. Pages that fail are reported and skipped; the curated
+ * summaries still answer. Set KB_FETCH_FULL_DOCS=false to turn this off.
  */
 export function refreshFullDocuments(fetchImpl: typeof fetch = fetch): Promise<void> {
   if (process.env.KB_FETCH_FULL_DOCS === 'false') return Promise.resolve();
   if (fullFetchInFlight) return fullFetchInFlight;
+  loadKnowledgeBase();
   fullFetchInFlight = (async () => {
-    const targets = sources.filter((s) => s.use_in_rag === 'yes' && s.format === 'html' && /^https:\/\//.test(s.url));
+    const targets = sources.filter(
+      (s) => s.use_in_rag === 'yes' && (s.format === 'html' || s.format === 'pdf') && /^https:\/\//.test(s.url)
+    );
     const today = new Date().toISOString().slice(0, 10);
-    const next: KnowledgeChunk[] = [];
-    let ok = 0;
-    for (const row of targets) {
-      try {
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
-        const res = await fetchImpl(row.url, {
-          signal: controller.signal,
-          headers: { 'User-Agent': 'DC-Airbnb-Estimator knowledge refresh (student project)', Accept: 'text/html' },
-        });
-        clearTimeout(timer);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const text = htmlToText(await res.text());
-        if (text.split(/\s+/).length < 60) throw new Error('page had too little text (may need JavaScript)');
-        next.push(...chunkFullText(row, text, today));
-        ok++;
-      } catch (err) {
-        console.warn(`[RAG] Full text unavailable for ${row.id} (${row.url}): ${String((err as Error)?.message || err).slice(0, 120)}`);
-      }
-    }
+    const settled = await Promise.all(targets.map((row) => fetchOne(row, fetchImpl, today)));
+    const next = settled.flatMap((x) => x.chunks);
+    fullFetchReport = { at: new Date().toISOString(), results: settled.map((x) => x.result) };
+    // Keep what we had if this round got nothing (e.g. the network was down).
     if (next.length > 0) {
       fullTextChunks = next;
       rebuild();
     }
     lastFullFetch = Date.now();
-    console.log(`[RAG] Full documents: ${ok}/${targets.length} fetched, ${next.length} chunks indexed.`);
+    const ok = settled.filter((x) => x.result.ok).length;
+    console.log(`[RAG] Full documents: ${ok}/${targets.length} fetched, ${next.length} passages indexed.`);
   })().finally(() => {
     fullFetchInFlight = null;
   });
   return fullFetchInFlight;
+}
+
+/** Per-source result of the last full-document fetch (null if none has run yet). */
+export function fullDocumentsReport() {
+  return fullFetchReport;
+}
+
+/** True once a full-document fetch has completed at least once. */
+export function fullDocumentsAttempted() {
+  return lastFullFetch > 0;
 }
 
 /** Starts the knowledge base: loads summaries now, fetches full documents in the background. */
@@ -433,5 +477,7 @@ export function resetKnowledgeBase() {
   sources = [];
   loaded = false;
   lastFullFetch = 0;
+  fullFetchReport = null;
+  fullFetchInFlight = null;
   index.build([]);
 }

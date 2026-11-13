@@ -26,7 +26,16 @@ import {
   RAG_MIN_SCORE,
   RAG_TOP_K,
 } from '../config/ai.ts';
-import { allChunks, onKnowledgeChange, searchKnowledge, startKnowledgeBase } from './rag.ts';
+import {
+  allChunks,
+  fullDocumentsAttempted,
+  fullDocumentsReport,
+  knowledgeStats,
+  onKnowledgeChange,
+  refreshFullDocuments,
+  searchKnowledge,
+  startKnowledgeBase,
+} from './rag.ts';
 import type { KnowledgeChunk, SearchHit } from './rag.ts';
 
 export type RetrievalMethod = 'vector' | 'keyword';
@@ -134,25 +143,34 @@ async function doSync(): Promise<SyncReport> {
   const toEmbed = chunks.filter((c) => existing.get(c.id) !== chunkHash(c));
   const toRemove = [...existing.keys()].filter((id) => !wanted.has(id));
 
-  const vectors: number[][] = [];
-  for (let i = 0; i < toEmbed.length; i += EMBED_BATCH) {
-    const batch = toEmbed.slice(i, i + EMBED_BATCH);
-    vectors.push(...(await embedder(batch.map(embeddingText), 'RETRIEVAL_DOCUMENT')));
-  }
-
-  if (toEmbed.length > 0 || toRemove.length > 0) {
+  // Remove passages that no longer exist, then embed and save batch by batch, so a quota
+  // error part-way through keeps everything embedded so far.
+  if (toRemove.length > 0) {
     await idx.beginUpdate();
     try {
-      if (toRemove.length) await idx.deleteItems(toRemove);
-      for (let i = 0; i < toEmbed.length; i++) {
-        const c = toEmbed[i];
-        await idx.upsertItem({ id: c.id, vector: vectors[i], metadata: { hash: chunkHash(c), sourceId: c.sourceId } });
+      await idx.deleteItems(toRemove);
+      await idx.endUpdate();
+    } catch (err) {
+      idx.cancelUpdate();
+      throw err;
+    }
+  }
+  for (let i = 0; i < toEmbed.length; i += EMBED_BATCH) {
+    const batch = toEmbed.slice(i, i + EMBED_BATCH);
+    const vectors = await embedder(batch.map(embeddingText), 'RETRIEVAL_DOCUMENT');
+    await idx.beginUpdate();
+    try {
+      for (let j = 0; j < batch.length; j++) {
+        const c = batch[j];
+        await idx.upsertItem({ id: c.id, vector: vectors[j], metadata: { hash: chunkHash(c), sourceId: c.sourceId } });
       }
       await idx.endUpdate();
     } catch (err) {
       idx.cancelUpdate();
       throw err;
     }
+    // Searchable as soon as the first batch (the curated summaries) is in.
+    ready = true;
   }
 
   ready = true;
@@ -238,6 +256,8 @@ export async function retrieve(query: string, k = RAG_TOP_K): Promise<RetrievalR
   // On Cloud Run, background work at startup can stall because CPU is only fully allocated
   // during requests. So if the index isn't ready yet, build it now, inside this request.
   if (embedder && !ready) await ensureIndexReady(FIRST_QUERY_WAIT_MS);
+  // Fetch the full official pages in the background while this request keeps the CPU awake.
+  if (!fullDocumentsAttempted()) refreshFullDocuments().catch(() => undefined);
   if (ready && embedder && index) {
     try {
       const [vec] = await embedder([q], 'RETRIEVAL_QUERY');
@@ -256,6 +276,30 @@ export async function retrieve(query: string, k = RAG_TOP_K): Promise<RetrievalR
     }
   }
   return { hits: searchKnowledge(q, k), method: 'keyword' };
+}
+
+function waitFor(p: Promise<unknown>, ms: number): Promise<void> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  return Promise.race([
+    p.then(() => undefined, () => undefined),
+    new Promise<void>((resolve) => {
+      timer = setTimeout(resolve, ms);
+    }),
+  ]).finally(() => timer && clearTimeout(timer));
+}
+
+/**
+ * Loads the full official pages (once per server start) and waits for their vectors.
+ * Used by the status page so opening it finishes the whole knowledge base.
+ */
+export async function ensureFullKnowledge(waitMs = 45_000): Promise<void> {
+  const deadline = Date.now() + waitMs;
+  if (!fullDocumentsAttempted()) await waitFor(refreshFullDocuments(), Math.max(0, deadline - Date.now()));
+  // The fetch triggers a re-sync; wait for it (and any queued one) to finish.
+  while (syncInFlight && Date.now() < deadline) {
+    await waitFor(syncInFlight, Math.max(0, deadline - Date.now()));
+  }
+  if (!ready) await ensureIndexReady(Math.max(0, deadline - Date.now()));
 }
 
 /**
@@ -284,6 +328,18 @@ export function retrievalStatus() {
     vectorStore: 'vectra (open-source, file-based)',
     minScore,
     passages: allChunks().length,
+    summaryPassages: knowledgeStats().summaryChunks,
+    fullTextPassages: knowledgeStats().fullTextChunks,
+    fullDocuments: (() => {
+      const r = fullDocumentsReport();
+      if (!r) return null;
+      return {
+        fetchedAt: r.at,
+        loaded: r.results.filter((x) => x.ok).length,
+        total: r.results.length,
+        failed: r.results.filter((x) => !x.ok).map((x) => ({ id: x.id, url: x.url, error: x.error })),
+      };
+    })(),
     hasEmbedder: Boolean(embedder),
     syncing: Boolean(syncInFlight),
     syncStartedAt,
@@ -300,6 +356,8 @@ export function resetRetrieval() {
   embedder = null;
   index = null;
   ready = false;
+  syncInFlight = null;
+  syncQueued = false;
   lastSync = null;
   syncStartedAt = null;
   syncAttempts = 0;
