@@ -13,6 +13,7 @@ import { resetKnowledgeBase, allChunks, refreshFullDocuments, fullDocumentsRepor
 import {
   ensureIndexReady,
   resetRetrieval,
+  retryDelaySeconds,
   retrieve,
   retrievalStatus,
   startRetrieval,
@@ -57,7 +58,7 @@ async function main() {
   check(again.embedded === 0 && again.removed === 0, 'repeat sync is a no-op');
 
   // 3. Semantic search finds the right sources
-  const pen = await retrieve('What is the fine if I host without a license?', 5);
+  const pen = await retrieve('civil penalty for the first violation and a second violation by a host', 5);
   check(pen.method === 'vector', 'penalty question answered by vector search');
   check(
     pen.hits.some((h) => h.chunk.id.startsWith('13_') || /\$6,000/.test(h.chunk.text)),
@@ -167,6 +168,7 @@ async function main() {
   // 6e. Saved pages (knowledge/full/<id>.txt from the weekly GitHub job) load at startup
   const kbCopy = fs.mkdtempSync(path.join(os.tmpdir(), 'kb-docs-'));
   fs.cpSync(path.resolve(process.cwd(), 'knowledge'), kbCopy, { recursive: true });
+  fs.rmSync(path.join(kbCopy, 'full'), { recursive: true, force: true });
   fs.mkdirSync(path.join(kbCopy, 'full'), { recursive: true });
   const statute = Array.from({ length: 300 }, (_, i) => (i === 150 ? 'a fine of $6,000 and revocation' : `clause${i}`)).join(' ');
   fs.writeFileSync(path.join(kbCopy, 'full', '03e.txt'), `retrieved: 2026-11-16\n${statute}\n`);
@@ -183,6 +185,55 @@ async function main() {
   check(saved.some((c) => c.text.includes('$6,000')), 'saved page text is searchable');
   check(fullDocumentsReport()?.results[0].id === '03e', 'weekly fetch report is shown on the status page');
   fs.rmSync(kbCopy, { recursive: true, force: true });
+
+  // 6f. Quota (429) part-way through: summaries are embedded first and kept, so vector
+  //     search still works; the next sync resumes with the full-text passages.
+  {
+    const kb = fs.mkdtempSync(path.join(os.tmpdir(), 'kb-docs-'));
+    fs.cpSync(path.resolve(process.cwd(), 'knowledge'), kb, { recursive: true });
+    fs.mkdirSync(path.join(kb, 'full'), { recursive: true });
+    const longText = Array.from({ length: 6000 }, (_, i) => `term${i % 300}`).join(' ');
+    fs.writeFileSync(path.join(kb, 'full', '03.txt'), `retrieved: 2026-11-13\n${longText}\n`);
+    resetRetrieval();
+    resetKnowledgeBase();
+    const { loadKnowledgeBase } = await import('../../lib/rag.ts');
+    loadKnowledgeBase(kb);
+    const total = allChunks().length;
+    let calls = 0;
+    const quotaEmbedder = async (texts: string[], taskType: string) => {
+      if (taskType === 'RETRIEVAL_QUERY') return fakeEmbedder(texts);
+      calls++;
+      if (calls >= 3) throw new Error('{"error":{"code":429,"message":"You exceeded your current quota","details":[{"retryDelay":"41s"}]}}');
+      return fakeEmbedder(texts);
+    };
+    const qdir = fs.mkdtempSync(path.join(os.tmpdir(), 'kb-index-'));
+    await startRetrieval({ embedder: quotaEmbedder, dir: qdir, minScore: 0.05 });
+    const st1 = retrievalStatus();
+    check(/429/.test(st1.lastError || '') && st1.method === 'vector', 'after a quota error mid-way, vector search still works');
+    const r1 = await retrieve('liability insurance requirement', 5);
+    const embeddedIds = new Set((await import('vectra').then(async ({ LocalIndex }) => (await new LocalIndex(qdir).listItems()).map((i) => i.id))));
+    const summaryIds = allChunks().filter((c) => c.kind === 'summary').map((c) => c.id);
+    check(r1.method === 'vector' && summaryIds.every((id) => embeddedIds.has(id)), `all summaries embedded before the quota ran out (${embeddedIds.size} saved)`);
+    calls = -100; // quota recovered
+    const resumed = await syncVectorIndex();
+    check(resumed.embedded > 0 && resumed.embedded < total, `next sync resumes only the missing passages (${resumed.embedded} of ${total})`);
+    fs.rmSync(kb, { recursive: true, force: true });
+  }
+  check(retryDelaySeconds(new Error('429 ... "retryDelay": "37s"')) === 37, 'reads the wait time from a quota error');
+  check(retryDelaySeconds(new Error('fetch failed')) === null, 'non-quota errors are not retried');
+
+  // 6g. A prebuilt index (committed by the weekly GitHub job) means zero embedding at startup
+  {
+    const prebuilt = fs.mkdtempSync(path.join(os.tmpdir(), 'kb-index-'));
+    resetRetrieval();
+    resetKnowledgeBase();
+    await startRetrieval({ embedder: fakeEmbedder, dir: prebuilt, minScore: 0.05 });
+    resetRetrieval();
+    resetKnowledgeBase();
+    resetFakeCounters();
+    await startRetrieval({ embedder: fakeEmbedder, dir: prebuilt, minScore: 0.05 });
+    check(fakeEmbeddedTexts === 0 && retrievalStatus().method === 'vector', 'prebuilt index: no passages embedded at startup');
+  }
 
   // 7. Citations: renumber by first use, drop invented refs, strip SOURCES line
   const reg = new CitationRegistry();
