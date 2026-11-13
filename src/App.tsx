@@ -341,6 +341,20 @@ export default function App() {
         )}
       </main>
 
+      {/* Footer: links search engines and people to the plain-HTML explainer page.
+          Right padding keeps it clear of the floating "Questions?" button. */}
+      <footer className="border-t border-gray-200 mt-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-5 pb-24 sm:pb-6 sm:!pr-48 flex flex-col sm:flex-row sm:items-center gap-x-6 gap-y-2 text-xs text-gray-500">
+          <a href="/about" className="font-semibold text-gray-700 hover:text-gray-900 underline shrink-0">
+            How it works &amp; DC rules
+          </a>
+          <p>
+            Free Airbnb earnings estimates for Washington, DC homeowners. Not affiliated with Airbnb or the DC
+            government. Estimates are not guarantees or legal, tax or financial advice.
+          </p>
+        </div>
+      </footer>
+
       {/* Airbnb-style Bottom Chatbot Widget (replaces separate Ask AI tab) */}
       <AskAiChatWidget
         isOpen={isChatOpen}

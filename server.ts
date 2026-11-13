@@ -41,6 +41,7 @@ import { listSources } from './lib/rag.ts';
 import { retrieve, retrievalStatus, startRetrieval } from './lib/vectorStore.ts';
 import type { RetrievalMethod } from './lib/vectorStore.ts';
 import { CitationRegistry, applyCitations, citationFromHit, toolPayload } from './lib/citations.ts';
+import { renderAboutPage, robotsTxt, sitemapXml } from './lib/seoPages.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -715,6 +716,24 @@ app.get('/api/kb/sources', (_req: Request, res: Response) => {
   });
 });
 
+// ---------------------------------------------------------------------------
+// Search engine pages (plain HTML/text, readable without JavaScript)
+// ---------------------------------------------------------------------------
+const aboutHtml = renderAboutPage();
+app.get('/robots.txt', (_req: Request, res: Response) => {
+  res.type('text/plain').set('Cache-Control', 'public, max-age=3600').send(robotsTxt());
+});
+app.get('/sitemap.xml', (_req: Request, res: Response) => {
+  res.type('application/xml').set('Cache-Control', 'public, max-age=3600').send(sitemapXml());
+});
+app.get(['/about', '/about/', '/how-it-works'], (req: Request, res: Response) => {
+  if (req.path !== '/about') {
+    res.redirect(301, '/about');
+    return;
+  }
+  res.type('html').set('Cache-Control', 'public, max-age=600').send(aboutHtml);
+});
+
 async function startServer() {
   const isDev = process.env.NODE_ENV !== 'production';
 
@@ -731,8 +750,11 @@ async function startServer() {
     app.use(vite.middlewares);
   } else {
     app.use(express.static(path.resolve(__dirname, 'dist')));
-    app.get('*', (_req, res) => {
-      res.sendFile(path.resolve(__dirname, 'dist/index.html'));
+    app.get('*', (req, res) => {
+      // The app has one page (tabs use #hash). Any other path still shows the app,
+      // but with a real 404 status so search engines don't index junk URLs.
+      const known = req.path === '/' || req.path === '/index.html';
+      res.status(known ? 200 : 404).sendFile(path.resolve(__dirname, 'dist/index.html'));
     });
   }
 
