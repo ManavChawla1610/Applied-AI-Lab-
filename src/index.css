@@ -34,3 +34,30 @@ body {
 .leaflet-popup-tip {
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
+
+/* ---- Clean map chrome (square map card on the Earnings tab) ---- */
+.dc-map .leaflet-control-zoom {
+  border: none !important;
+  border-radius: 12px !important;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+  margin: 0 14px 30px 0 !important;
+}
+.dc-map .leaflet-control-zoom a {
+  width: 34px !important;
+  height: 34px !important;
+  line-height: 34px !important;
+  font-size: 18px !important;
+  color: #222 !important;
+  border-bottom: 1px solid #eee !important;
+}
+.dc-map .leaflet-control-zoom a:last-child { border-bottom: none !important; }
+.dc-map .leaflet-control-attribution {
+  background: rgba(255, 255, 255, 0.75) !important;
+  font-size: 9px !important;
+  color: #777 !important;
+  border-top-left-radius: 8px;
+  padding: 1px 6px !important;
+}
+.dc-map .leaflet-control-attribution a { color: #777 !important; }
+.dc-map .airbnb-rate-bubble > div:hover { transform: scale(1.06); }

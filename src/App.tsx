@@ -250,7 +250,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-white text-gray-900 flex flex-col font-sans selection:bg-rose-100 selection:text-rose-900">
       {/* Top Application Header */}
-      <header className="border-b border-gray-200 sticky top-0 z-30 bg-white/95 backdrop-blur-xs">
+      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl bg-rose-600 flex items-center justify-center text-white font-bold text-lg shadow-xs shrink-0">
