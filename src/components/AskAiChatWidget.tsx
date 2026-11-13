@@ -5,6 +5,8 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, X, ChevronDown, ExternalLink, MapPin } from 'lucide-react';
+import { CitedText, EvidenceSheet, KnowledgeSearch, SourcesRow } from './KnowledgeEvidence';
+import type { Citation } from './KnowledgeEvidence';
 import type { EarningsResult, SpaceType, BedroomOption, GeoPoint } from '../../lib/calc';
 import type { MonthlyFinancialSummary } from '../../lib/costs';
 import type { CostAssumptions } from '../../config/costs';
@@ -31,6 +33,7 @@ export interface ChatMessage {
   timestamp: string;
   stepUsed?: 1 | 2;
   citedLinks?: CitedLink[];
+  citations?: Citation[];
   mapActions?: MapAction[];
   isError?: boolean;
 }
@@ -60,6 +63,7 @@ export const SUGGESTED_CHIPS = [
   "When is DC's busy season?",
   'Which costs can I cut?',
   'What if I go over 90 nights?',
+  "What's the fine for hosting without a license?",
 ];
 
 /**
@@ -142,6 +146,8 @@ export const AskAiChatWidget: React.FC<AskAiChatWidgetProps> = ({
   const [inputText, setInputText] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [hasAskedQuestion, setHasAskedQuestion] = useState<boolean>(false);
+  const [mode, setMode] = useState<'chat' | 'search'>('chat');
+  const [openCitation, setOpenCitation] = useState<Citation | null>(null);
 
   const threadContainerRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -155,7 +161,7 @@ export const AskAiChatWidget: React.FC<AskAiChatWidgetProps> = ({
         inputRef.current?.focus();
       }, 100);
     }
-  }, [isOpen, messages, isLoading]);
+  }, [isOpen, messages, isLoading, mode]);
 
   // Build sanitized userScenario without street address
   const buildUserScenario = () => ({
@@ -248,6 +254,7 @@ export const AskAiChatWidget: React.FC<AskAiChatWidgetProps> = ({
       const replyText = (data.answer || '').trim();
       const citedLinks: CitedLink[] = Array.isArray(data.citedLinks) ? data.citedLinks.slice(0, 2) : [];
       const mapActions: MapAction[] = Array.isArray(data.mapActions) ? data.mapActions : [];
+      const citations: Citation[] = Array.isArray(data.citations) ? data.citations : [];
 
       setMessages((prev) => [
         ...prev,
@@ -258,6 +265,7 @@ export const AskAiChatWidget: React.FC<AskAiChatWidgetProps> = ({
           timestamp: formatTime(new Date()),
           stepUsed: data.stepUsed === 2 ? 2 : 1,
           citedLinks,
+          citations,
           mapActions,
         },
       ]);
@@ -298,7 +306,7 @@ export const AskAiChatWidget: React.FC<AskAiChatWidgetProps> = ({
       {/* Expanded Floating Chat Popover in Bottom-Right Corner */}
       {isOpen && (
         <div
-          className="fixed bottom-5 right-5 left-4 sm:left-auto z-[9999] sm:w-[410px] h-[560px] max-h-[82vh] bg-white rounded-3xl shadow-[0_12px_40px_rgba(0,0,0,0.22)] border border-gray-200 flex flex-col overflow-hidden"
+          className="fixed bottom-5 right-5 left-4 sm:left-auto z-[9999] sm:w-[410px] h-[600px] max-h-[86vh] bg-white rounded-3xl shadow-[0_12px_40px_rgba(0,0,0,0.22)] border border-gray-200 flex flex-col overflow-hidden"
           role="dialog"
           aria-label="Ask about hosting in DC"
         >
@@ -332,6 +340,38 @@ export const AskAiChatWidget: React.FC<AskAiChatWidgetProps> = ({
             </div>
           </div>
 
+          {/* Mode switch: chat with the assistant, or read the source documents directly */}
+          <div className="px-4 pt-2.5 pb-2 border-b border-gray-100 flex gap-1 shrink-0" role="tablist">
+            {(
+              [
+                ['chat', 'Ask'],
+                ['search', 'Search sources'],
+              ] as const
+            ).map(([key, label]) => (
+              <button
+                key={key}
+                type="button"
+                role="tab"
+                aria-selected={mode === key}
+                onClick={() => {
+                  setMode(key);
+                  setOpenCitation(null);
+                }}
+                className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors cursor-pointer ${
+                  mode === key ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {mode === 'search' ? (
+            <div className="flex-1 min-h-0">
+              <KnowledgeSearch />
+            </div>
+          ) : (
+          <>
           {/* Scrollable Message Thread */}
           <div
             ref={threadContainerRef}
@@ -353,7 +393,12 @@ export const AskAiChatWidget: React.FC<AskAiChatWidgetProps> = ({
                       : 'bg-gray-100 text-gray-900 rounded-bl-xs'
                   }`}
                 >
-                  <div className="whitespace-pre-wrap">{msg.text}</div>
+                  <CitedText text={msg.text} citations={msg.citations} onOpen={setOpenCitation} />
+
+                  {/* Knowledge-base answers: numbered sources, each opens the exact passage */}
+                  {msg.sender === 'assistant' && msg.citations && msg.citations.length > 0 && (
+                    <SourcesRow citations={msg.citations} onOpen={setOpenCitation} />
+                  )}
 
                   {/* Only web answers show a small muted "Source:" line with links */}
                   {msg.sender === 'assistant' &&
@@ -465,6 +510,10 @@ export const AskAiChatWidget: React.FC<AskAiChatWidgetProps> = ({
               <Send className="w-3.5 h-3.5" />
             </button>
           </form>
+          </>
+          )}
+
+          <EvidenceSheet citation={openCitation} onClose={() => setOpenCitation(null)} />
         </div>
       )}
     </>

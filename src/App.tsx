@@ -250,7 +250,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-white text-gray-900 flex flex-col font-sans selection:bg-rose-100 selection:text-rose-900">
       {/* Top Application Header */}
-      <header className="border-b border-gray-200 sticky top-0 z-30 bg-white/95 backdrop-blur-xs">
+      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl bg-rose-600 flex items-center justify-center text-white font-bold text-lg shadow-xs shrink-0">
@@ -340,6 +340,20 @@ export default function App() {
           />
         )}
       </main>
+
+      {/* Footer: links search engines and people to the plain-HTML explainer page.
+          Right padding keeps it clear of the floating "Questions?" button. */}
+      <footer className="border-t border-gray-200 mt-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-5 pb-24 sm:pb-6 sm:!pr-48 flex flex-col sm:flex-row sm:items-center gap-x-6 gap-y-2 text-xs text-gray-500">
+          <a href="/about" className="font-semibold text-gray-700 hover:text-gray-900 underline shrink-0">
+            How it works &amp; DC rules
+          </a>
+          <p>
+            Free Airbnb earnings estimates for Washington, DC homeowners. Not affiliated with Airbnb or the DC
+            government. Estimates are not guarantees or legal, tax or financial advice.
+          </p>
+        </div>
+      </footer>
 
       {/* Airbnb-style Bottom Chatbot Widget (replaces separate Ask AI tab) */}
       <AskAiChatWidget

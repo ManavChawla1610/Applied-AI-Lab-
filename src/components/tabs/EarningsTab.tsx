@@ -90,9 +90,9 @@ export const EarningsTab: React.FC<EarningsTabProps> = ({
 
   return (
     <div className="w-full">
-      <div className="flex flex-col lg:flex-row gap-8 lg:gap-14 items-stretch min-h-[calc(100vh-170px)]">
-        {/* LEFT COLUMN: 45% Desktop width, vertically centered, top to bottom */}
-        <div className="w-full lg:w-[45%] flex flex-col justify-center py-4 sm:py-6 lg:py-8 space-y-7">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center lg:min-h-[calc(100vh-190px)] py-2 lg:py-6">
+        {/* LEFT COLUMN: headline and controls, vertically centred next to the map */}
+        <div className="w-full max-w-[480px] mx-auto lg:mx-0 lg:justify-self-end flex flex-col justify-center space-y-7">
           {/* 1. Headline (very large, 3 lines max): "Your home could make $[X] on Airbnb" */}
           <div className="space-y-1">
             <h1 className="text-4xl sm:text-5xl lg:text-[54px] font-extrabold text-gray-900 tracking-tight leading-[1.12]">
@@ -190,8 +190,8 @@ export const EarningsTab: React.FC<EarningsTabProps> = ({
           </div>
         </div>
 
-        {/* RIGHT COLUMN: 55% Desktop width, full column height map */}
-        <div className="w-full lg:w-[55%] h-[460px] sm:h-[520px] lg:h-auto min-h-[460px] lg:min-h-[580px]">
+        {/* RIGHT COLUMN: square map card (like Airbnb's host page) */}
+        <div className="w-full max-w-[min(540px,calc(100vh-200px))] min-w-[300px] mx-auto lg:mx-0 lg:justify-self-start aspect-square">
           <InteractiveMap
             pin={pin}
             searchRadiusMi={estimateResult.finalRadiusMi}

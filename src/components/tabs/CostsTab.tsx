@@ -297,7 +297,7 @@ export const CostsTab: React.FC<CostsTabProps> = ({
       {/* Next Tab Button */}
       <NextTabButton
         targetTab="legal"
-        targetLabel="3 · Legal & Setup"
+        targetLabel="Legal & setup"
         onNavigate={onNavigateTab}
       />
     </div>

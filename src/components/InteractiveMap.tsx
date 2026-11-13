@@ -7,6 +7,7 @@ import React, { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import { ComparableListing, formatCurrency, GeoPoint } from '../../lib/calc';
 import { Listing } from '../../lib/data';
+import { MAP_ATTRIBUTION, MAP_TILE_URL } from '../../config/map';
 
 interface InteractiveMapProps {
   pin: GeoPoint;
@@ -49,12 +50,15 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
     // Zoom control at bottom-right per design spec
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-    // OpenStreetMap standard tiles
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    // Clean, light basemap (muted colours, fewer labels) so the price pins stand out.
+    // Tile style lives in config/map.ts.
+    L.tileLayer(MAP_TILE_URL, {
       maxZoom: 19,
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a> contributors',
+      subdomains: 'abcd',
+      detectRetina: true,
+      attribution: MAP_ATTRIBUTION,
     }).addTo(map);
+    map.attributionControl.setPrefix(false);
 
     // Click map to reposition "My home" pin
     map.on('click', (e: L.LeafletMouseEvent) => {
@@ -162,8 +166,8 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
             padding: 5px 10px;
             border-radius: 9999px;
             white-space: nowrap;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.18);
-            border: 1px solid #e5e7eb;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.14);
+            border: 1px solid rgba(0,0,0,0.06);
             cursor: pointer;
             transition: transform 0.15s ease, background 0.15s ease;
             display: inline-flex;
@@ -217,7 +221,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
   }, [comparables]);
 
   return (
-    <div className="relative w-full h-full min-h-[460px] sm:min-h-[520px] lg:min-h-full rounded-3xl overflow-hidden border border-gray-200">
+    <div className="dc-map relative w-full h-full rounded-[28px] overflow-hidden shadow-[0_6px_24px_rgba(0,0,0,0.10)] ring-1 ring-black/5 bg-[#f2efe9]">
       <div ref={mapContainerRef} className="w-full h-full" />
 
       {/* Floating label at the top: 'Explore rates near you' */}

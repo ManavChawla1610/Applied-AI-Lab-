@@ -6,3 +6,6 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# Vector index (rebuilt from /knowledge at startup)
+.kb-index/
