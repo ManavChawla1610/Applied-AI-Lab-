@@ -61,3 +61,8 @@ body {
 }
 .dc-map .leaflet-control-attribution a { color: #777 !important; }
 .dc-map .airbnb-rate-bubble > div:hover { transform: scale(1.06); }
+
+/* Softer OpenStreetMap look: muted colours, slightly lighter, so the price pins stand out */
+.dc-map .leaflet-tile-pane {
+  filter: saturate(0.45) brightness(1.06) contrast(0.92);
+}
