@@ -20,12 +20,12 @@ import {
 } from '../lib/costs';
 import { CostAssumptions, INITIAL_COST_ASSUMPTIONS } from '../config/costs';
 import { AddressSearchPanel } from './components/AddressSearchPanel';
-import { TabBar, TabId, TABS_CONFIG } from './components/tabs/TabBar';
+import { TabBar, TabId } from './components/tabs/TabBar';
 import { TabSummaryStrip } from './components/tabs/TabSummaryStrip';
 import { EarningsTab } from './components/tabs/EarningsTab';
 import { CostsTab } from './components/tabs/CostsTab';
 import { LegalTab } from './components/tabs/LegalTab';
-import { HostChat } from './components/HostChat';
+import { AskAiChatWidget } from './components/AskAiChatWidget';
 import { AlertOctagon, RefreshCw } from 'lucide-react';
 
 const HASH_TO_TAB: Record<string, TabId> = {
@@ -44,6 +44,12 @@ export default function App() {
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [isChatOpen, setIsChatOpen] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return window.location.hash.toLowerCase() === '#ask';
+    }
+    return false;
+  });
 
   // Tab State with URL hash sync
   const getInitialTab = (): TabId => {
@@ -56,21 +62,14 @@ export default function App() {
 
   const [activeTab, setActiveTab] = useState<TabId>(getInitialTab);
 
-  // Floating assistant (like Airbnb's "Questions?" button). Old #ask links open it.
-  const [isChatOpen, setIsChatOpen] = useState<boolean>(
-    () => typeof window !== 'undefined' && window.location.hash.toLowerCase() === '#ask'
-  );
-  const openChat = useCallback(() => setIsChatOpen(true), []);
-  const closeChat = useCallback(() => setIsChatOpen(false), []);
-
   // Synchronize hash on browser back/forward and direct navigation
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.toLowerCase();
-      if (HASH_TO_TAB[hash]) {
-        setActiveTab(HASH_TO_TAB[hash]);
-      } else if (hash === '#ask') {
+      if (hash === '#ask') {
         setIsChatOpen(true);
+      } else if (HASH_TO_TAB[hash]) {
+        setActiveTab(HASH_TO_TAB[hash]);
       }
     };
 
@@ -175,6 +174,31 @@ export default function App() {
       setCustomLabel('Custom pin');
     }
   };
+
+  const handleApplyMapAction = useCallback(
+    (action: {
+      lat: number;
+      lng: number;
+      label: string;
+      spaceType: SpaceType;
+      bedrooms: BedroomOption;
+      nights: number;
+    }) => {
+      setPin({ lat: action.lat, lng: action.lng });
+      setCustomLabel(action.label);
+      setSpaceType(action.spaceType);
+      setBedrooms(action.bedrooms);
+      setNights(clampNights(action.nights));
+      setPriceOverride(null);
+      setActiveTab('earnings');
+      if (typeof window !== 'undefined') {
+        if (window.location.hash !== '#earnings') {
+          window.history.pushState(null, '', '#earnings');
+        }
+      }
+    },
+    []
+  );
 
   // Loading state
   if (loading) {
@@ -312,24 +336,26 @@ export default function App() {
             bedrooms={bedrooms}
             typicalNightlyEarnings={estimateResult.typicalNightlyEarnings}
             onNavigateTab={handleSelectTab}
-            onOpenChat={openChat}
+            onOpenChat={() => setIsChatOpen(true)}
           />
         )}
-
       </main>
 
-      {/* Floating assistant on every tab */}
-      <HostChat
+      {/* Airbnb-style Bottom Chatbot Widget (replaces separate Ask AI tab) */}
+      <AskAiChatWidget
         isOpen={isChatOpen}
-        onOpen={openChat}
-        onClose={closeChat}
+        onToggleOpen={setIsChatOpen}
         pin={pin}
-        costAssumptions={costAssumptions}
+        neighborhoodLabel={activeLocationLabel}
         nights={nights}
         spaceType={spaceType}
         bedrooms={bedrooms}
+        includeLowActivity={includeLowActivity}
+        priceOverride={priceOverride}
         estimateResult={estimateResult}
         costSummary={costSummary}
+        costAssumptions={costAssumptions}
+        onApplyMapAction={handleApplyMapAction}
       />
 
       {/* Top-Level Address Search Panel: accessible from any tab */}
@@ -348,3 +374,4 @@ export default function App() {
     </div>
   );
 }
+

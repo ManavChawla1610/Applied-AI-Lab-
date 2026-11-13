@@ -12,8 +12,7 @@ import {
   AlertCircle,
   Map,
 } from 'lucide-react';
-import { DC_BOUNDS, MIN_QUERY_LENGTH } from '../../config/geo';
-import { OUTSIDE_DC_MESSAGE, useAddressSearch } from '../lib/useAddressSearch';
+import { DC_BOUNDS, GEOCODE_DEBOUNCE_MS, MIN_QUERY_LENGTH } from '../../config/geo';
 
 export interface GeocodeResultItem {
   id: string;
@@ -77,36 +76,135 @@ export const AddressSearchPanel: React.FC<AddressSearchPanelProps> = ({
   onSelectAddress,
   onUseMapInstead,
 }) => {
-  const search = useAddressSearch();
-  const { query, suggestions, highlightedIndex, setHighlightedIndex } = search;
-  const isLoading = search.status === 'searching';
-  const [selectError, setSelectError] = useState<string | null>(null);
-  const boundsWarning = search.outsideDcError || selectError;
+  const [query, setQuery] = useState('');
+  const [suggestions, setSuggestions] = useState<GeocodeResultItem[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [boundsWarning, setBoundsWarning] = useState<string | null>(null);
+  const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
 
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const lastResolvedOutsideDc = useRef<boolean>(false);
 
   // Reset and autofocus on open
   useEffect(() => {
     if (isOpen) {
-      search.reset();
-      setSelectError(null);
+      setQuery('');
+      setSuggestions([]);
+      setIsLoading(false);
+      setHasSearched(false);
+      setErrorMessage(null);
+      setBoundsWarning(null);
+      setHighlightedIndex(-1);
+      lastResolvedOutsideDc.current = false;
       setTimeout(() => {
         inputRef.current?.focus();
       }, 50);
+    } else {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
+  const executeSearch = async (searchTerm: string, isManualSubmit = false) => {
+    const trimmed = searchTerm.trim();
+    if (trimmed.length < MIN_QUERY_LENGTH) {
+      setSuggestions([]);
+      setIsLoading(false);
+      setHasSearched(false);
+      setErrorMessage(null);
+      return;
+    }
+
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
+    setIsLoading(true);
+    setErrorMessage(null);
+
+    try {
+      const res = await fetch(`/api/geocode?q=${encodeURIComponent(trimmed)}`, {
+        signal: controller.signal,
+      });
+
+      if (!res.ok) {
+        throw new Error('Geocoding request failed');
+      }
+
+      const data = await res.json();
+      const fetchedSuggestions: GeocodeResultItem[] = Array.isArray(data)
+        ? data
+        : (data?.suggestions || []);
+      const isOutside = Boolean(data && data.outsideDc);
+
+      lastResolvedOutsideDc.current = isOutside;
+      setSuggestions(fetchedSuggestions);
+      setHasSearched(true);
+      setHighlightedIndex(fetchedSuggestions.length > 0 ? 0 : -1);
+
+      // STEP 4: Red error appears ONLY on Enter with non-DC text
+      if (isManualSubmit) {
+        if (fetchedSuggestions.length > 0) {
+          handleSelect(fetchedSuggestions[0]);
+        } else if (isOutside) {
+          setBoundsWarning('This app covers Washington, DC only.');
+        }
+      }
+    } catch (err: unknown) {
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        return;
+      }
+      console.error('Address search error:', err);
+      // STEP 3: Geocoder failure -> muted text
+      setErrorMessage('Address search is unavailable — click the map to place your home.');
+      setSuggestions([]);
+      setHasSearched(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectError(null);
-    search.setQuery(e.target.value);
+    const val = e.target.value;
+    setQuery(val);
+    // Editing text immediately clears any error
+    setBoundsWarning(null);
+    setErrorMessage(null);
+
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    if (val.trim().length < MIN_QUERY_LENGTH) {
+      setSuggestions([]);
+      setIsLoading(false);
+      setHasSearched(false);
+      lastResolvedOutsideDc.current = false;
+      return;
+    }
+
+    setIsLoading(true);
+    debounceTimerRef.current = setTimeout(() => {
+      executeSearch(val, false);
+    }, GEOCODE_DEBOUNCE_MS);
   };
 
   const handleSelect = (item: GeocodeResultItem) => {
     if (!isWithinDcBounds(item.lat, item.lng)) {
-      setSelectError(OUTSIDE_DC_MESSAGE);
+      setBoundsWarning('This app covers Washington, DC only.');
       return;
     }
+
     onSelectAddress({
       lat: item.lat,
       lng: item.lng,
@@ -115,26 +213,43 @@ export const AddressSearchPanel: React.FC<AddressSearchPanelProps> = ({
     onClose();
   };
 
-  const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Escape') {
       e.preventDefault();
       onClose();
       return;
     }
+
     if (e.key === 'Enter') {
       e.preventDefault();
-      const picked = await search.resolveOnEnter();
-      if (picked) handleSelect(picked);
+      if (suggestions.length > 0) {
+        // Pressing Enter with DC suggestions showing selects the first one
+        const chosen = highlightedIndex >= 0 && suggestions[highlightedIndex] ? suggestions[highlightedIndex] : suggestions[0];
+        handleSelect(chosen);
+      } else if (lastResolvedOutsideDc.current) {
+        // Text resolves to non-DC
+        setBoundsWarning('This app covers Washington, DC only.');
+      } else if (query.trim().length >= MIN_QUERY_LENGTH) {
+        if (debounceTimerRef.current) {
+          clearTimeout(debounceTimerRef.current);
+        }
+        executeSearch(query, true);
+      }
       return;
     }
+
     if (e.key === 'ArrowDown') {
       e.preventDefault();
-      search.moveHighlight(1);
+      if (suggestions.length === 0) return;
+      setHighlightedIndex((prev) => (prev + 1) % suggestions.length);
       return;
     }
+
     if (e.key === 'ArrowUp') {
       e.preventDefault();
-      search.moveHighlight(-1);
+      if (suggestions.length === 0) return;
+      setHighlightedIndex((prev) => (prev - 1 + suggestions.length) % suggestions.length);
+      return;
     }
   };
 
@@ -196,9 +311,11 @@ export const AddressSearchPanel: React.FC<AddressSearchPanelProps> = ({
             </div>
           )}
 
-          {/* Grey helper text while typing (never a red error) */}
-          {!boundsWarning && search.hint && search.status !== 'searching' && (
-            <p className="text-xs text-gray-500 pl-1">{search.hint}</p>
+          {/* Geocoder failure -> muted text */}
+          {errorMessage && (
+            <p className="text-xs text-gray-500 pl-1 pt-1">
+              {errorMessage}
+            </p>
           )}
         </div>
 
@@ -208,6 +325,12 @@ export const AddressSearchPanel: React.FC<AddressSearchPanelProps> = ({
             <div className="py-6 text-center text-xs text-gray-500 flex items-center justify-center gap-2">
               <Loader2 className="w-4 h-4 animate-spin text-gray-400" />
               <span>Searching…</span>
+            </div>
+          )}
+
+          {!isLoading && hasSearched && suggestions.length === 0 && !errorMessage && (
+            <div className="py-6 px-4 text-center text-xs text-gray-400 leading-relaxed">
+              Keep typing — e.g. 225 7th St SE
             </div>
           )}
 

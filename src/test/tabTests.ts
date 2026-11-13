@@ -16,14 +16,13 @@ function assert(condition: boolean, message: string) {
 async function runTabTests() {
   console.log('--- Starting Tab Structure & State Invariance Tests ---\n');
 
-  // Test 1: Verify all 4 tabs and hash configuration
+  // Test 1: Verify the 3 core tabs and hash configuration (Ask AI is now a bottom chatbot widget)
   console.log('Test 1: Verify Tab Configuration');
-  assert(TABS_CONFIG.length === 3, 'Must have exactly 3 tabs (Ask AI is now a floating assistant)');
+  assert(TABS_CONFIG.length === 3, 'Must have 3 core estimation tabs');
   assert(TABS_CONFIG[0].id === 'earnings' && TABS_CONFIG[0].hash === '#earnings', 'Tab 1 is Earnings (#earnings)');
   assert(TABS_CONFIG[1].id === 'costs' && TABS_CONFIG[1].hash === '#costs', 'Tab 2 is Costs & Profit (#costs)');
   assert(TABS_CONFIG[2].id === 'legal' && TABS_CONFIG[2].hash === '#legal', 'Tab 3 is Legal & Setup (#legal)');
-  assert(!TABS_CONFIG.some((t) => (t.id as string) === 'ask'), 'Ask AI is no longer a tab');
-  console.log('✓ Test 1 passed: 3 tabs and URL hashes configured in correct order\n');
+  console.log('✓ Test 1 passed: All 3 tabs and URL hashes configured in correct order\n');
 
   // Test 2: Invariance of First Fold Earnings Calculations
   console.log('Test 2: First Fold Earnings Numbers Invariance');

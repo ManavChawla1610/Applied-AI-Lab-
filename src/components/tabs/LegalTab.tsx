@@ -4,9 +4,9 @@
  */
 
 import React from 'react';
+import { Sparkles } from 'lucide-react';
 import { BedroomOption, SpaceType } from '../../../lib/calc';
 import { LegalSection } from '../legal/LegalSection';
-import { Sparkles } from 'lucide-react';
 import { TabId } from './TabBar';
 
 interface LegalTabProps {
@@ -23,7 +23,6 @@ export const LegalTab: React.FC<LegalTabProps> = ({
   spaceType,
   bedrooms,
   typicalNightlyEarnings,
-  onNavigateTab,
   onOpenChat,
 }) => {
   return (
@@ -36,21 +35,20 @@ export const LegalTab: React.FC<LegalTabProps> = ({
         typicalNightlyEarnings={typicalNightlyEarnings}
       />
 
-      {/* Last tab: point to the assistant instead of a next tab */}
+      {/* Bottom Action to open the Ask AI bottom assistant */}
       {onOpenChat && (
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="pt-8 border-t border-gray-200/80 flex items-center justify-end">
-            <button
-              type="button"
-              onClick={onOpenChat}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-900 hover:bg-black text-white font-semibold text-sm rounded-xl shadow-xs transition-all cursor-pointer"
-            >
-              <Sparkles className="w-4 h-4" />
-              <span>Still have questions? Ask the assistant</span>
-            </button>
-          </div>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 flex justify-end">
+          <button
+            type="button"
+            onClick={onOpenChat}
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-gray-900 hover:bg-black text-white text-sm font-semibold transition-all cursor-pointer shadow-xs"
+          >
+            <Sparkles className="w-4 h-4 text-rose-400" />
+            <span>Have questions? Ask about hosting in DC</span>
+          </button>
         </div>
       )}
     </div>
   );
 };
+

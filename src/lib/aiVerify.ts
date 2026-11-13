@@ -114,3 +114,79 @@ export function verifyReplyNumbers(
     unverifiedNumbers: unverified,
   };
 }
+
+/**
+ * Checks specifically for $ amounts and % values in a Step 1 answer against context JSON (±1 tolerance).
+ */
+export function verifyStep1CurrencyAndPercent(
+  replyText: string,
+  contextObj: unknown
+): { hasUnverified: boolean; unverifiedTokens: string[] } {
+  const allowed = extractContextNumbers(contextObj);
+  const unverifiedTokens: string[] = [];
+
+  // 1. Check all $ amounts
+  const dollarMatches = replyText.matchAll(/\$([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]+)?|[0-9]+(?:\.[0-9]+)?)/g);
+  for (const m of dollarMatches) {
+    const rawToken = m[0];
+    const num = parseFloat(m[1].replace(/,/g, ''));
+    if (isNaN(num)) continue;
+
+    let matchFound = false;
+    for (const allowedNum of allowed) {
+      if (Math.abs(num - allowedNum) <= 1.05) {
+        matchFound = true;
+        break;
+      }
+    }
+    if (!matchFound) {
+      unverifiedTokens.push(rawToken);
+    }
+  }
+
+  // 2. Check all % amounts
+  const pctMatches = replyText.matchAll(/([0-9]+(?:\.[0-9]+)?)\s*%/g);
+  for (const m of pctMatches) {
+    const rawToken = m[0];
+    const num = parseFloat(m[1]);
+    if (isNaN(num)) continue;
+
+    let matchFound = false;
+    for (const allowedNum of allowed) {
+      if (
+        Math.abs(num - allowedNum) <= 1.05 ||
+        Math.abs(num / 100 - allowedNum) <= 0.015 ||
+        Math.abs(num - allowedNum * 100) <= 1.05
+      ) {
+        matchFound = true;
+        break;
+      }
+    }
+    if (!matchFound) {
+      unverifiedTokens.push(rawToken);
+    }
+  }
+
+  return {
+    hasUnverified: unverifiedTokens.length > 0,
+    unverifiedTokens,
+  };
+}
+
+/**
+ * Confirms that a request body does not contain a street address or host personal name.
+ */
+export function auditRequestBodyPrivacy(body: Record<string, any>): {
+  isClean: boolean;
+  reason?: string;
+} {
+  const scenario = body?.userScenario || {};
+  if (scenario.address || scenario.streetAddress || scenario.hostName) {
+    return { isClean: false, reason: 'Explicit address/hostName key present in userScenario' };
+  }
+  const loc = String(scenario.neighborhood || scenario.location || '');
+  if (/\b\d+\s+[A-Za-z0-9]+\s+(?:St|Street|Ave|Avenue|Rd|Road|Blvd|Boulevard|Pl|Place|Way|Dr|Drive|Ct|Court|Ln|Lane)\b/i.test(loc)) {
+    return { isClean: false, reason: `Street address pattern found in location field: "${loc}"` };
+  }
+  return { isClean: true };
+}

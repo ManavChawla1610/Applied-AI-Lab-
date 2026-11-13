@@ -16,6 +16,7 @@ body {
 .leaflet-container {
   font-family: inherit;
   z-index: 10;
+  isolation: isolate;
 }
 
 .leaflet-popup-content-wrapper {

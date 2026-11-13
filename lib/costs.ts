@@ -3,8 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { DC_MARKET } from '../config/market';
-import { CostAssumptions, INITIAL_COST_ASSUMPTIONS, ManagementOption } from '../config/costs';
+import { DC_MARKET } from '../config/market.ts';
+import { INITIAL_COST_ASSUMPTIONS } from '../config/costs.ts';
+import type { CostAssumptions, ManagementOption } from '../config/costs.ts';
 
 export interface CostBreakdownItem {
   id: string;

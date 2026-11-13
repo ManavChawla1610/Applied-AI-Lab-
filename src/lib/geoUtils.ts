@@ -1,7 +1,4 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
+import { DC_BOUNDS } from '../../config/geo.ts';
 
 export interface NominatimAddress {
   house_number?: string;
@@ -27,64 +24,6 @@ export interface NominatimRawItem {
   address?: NominatimAddress;
 }
 
-/** A single Photon GeoJSON feature. */
-export interface PhotonFeature {
-  geometry?: { coordinates?: [number, number] | number[] };
-  properties?: {
-    osm_id?: number | string;
-    osm_key?: string;
-    name?: string;
-    housenumber?: string;
-    street?: string;
-    district?: string;
-    locality?: string;
-    city?: string;
-    county?: string;
-    state?: string;
-    countrycode?: string;
-    [key: string]: unknown;
-  };
-}
-
-/**
- * Converts Photon GeoJSON features into the Nominatim-style shape that
- * processGeocodeResults() already understands.
- * IMPORTANT: GeoJSON coordinates are [LONGITUDE, LATITUDE].
- * Features with missing or non-numeric coordinates are skipped.
- */
-export function photonFeaturesToRaw(features: PhotonFeature[]): NominatimRawItem[] {
-  const out: NominatimRawItem[] = [];
-  for (const f of features || []) {
-    const coords = f.geometry?.coordinates;
-    if (!coords || coords.length < 2) continue;
-    const lng = Number(coords[0]);
-    const lat = Number(coords[1]);
-    if (!Number.isFinite(lat) || !Number.isFinite(lng)) continue;
-
-    const p = f.properties || {};
-    const isStreetFeature = p.osm_key === 'highway';
-    const road = (p.street as string) || (isStreetFeature ? (p.name as string) : '') || '';
-    const houseNumber = (p.housenumber as string) || '';
-    const label = houseNumber && road ? `${houseNumber} ${road}` : (p.name as string) || road || '';
-
-    out.push({
-      place_id: p.osm_id,
-      lat,
-      lon: lng,
-      display_name: [label, p.district || p.locality, p.city, p.state].filter(Boolean).join(', '),
-      address: {
-        house_number: houseNumber || undefined,
-        road: road || undefined,
-        neighbourhood: (p.district as string) || (p.locality as string) || undefined,
-        city: p.city as string | undefined,
-        state: p.state as string | undefined,
-        country_code: ((p.countrycode as string) || '').toLowerCase() || undefined,
-      },
-    });
-  }
-  return out;
-}
-
 export interface ValidatedSuggestion {
   id: string;
   displayName: string;
@@ -95,6 +34,7 @@ export interface ValidatedSuggestion {
   lng: number;
   hasHouseNumber: boolean;
   addressKey: string;
+  outsideDc?: boolean;
 }
 
 export interface DcValidationResult {
@@ -301,6 +241,173 @@ export function processGeocodeResults(rawItems: NominatimRawItem[]): ProcessedSu
 
   const result: ProcessedSuggestions = uniqueList.slice(0, 5);
   if (rawItems.length > 0 && uniqueList.length === 0 && hadExplicitOutsideDc) {
+    result.outsideDc = true;
+  }
+  return result;
+}
+
+export interface PhotonFeature {
+  type: string;
+  geometry: {
+    type: string;
+    coordinates: [number, number]; // [lon, lat]
+  };
+  properties: {
+    osm_type?: string;
+    osm_id?: number | string;
+    name?: string;
+    housenumber?: string;
+    street?: string;
+    district?: string;
+    locality?: string;
+    suburb?: string;
+    city?: string;
+    state?: string;
+    postcode?: string;
+    countrycode?: string;
+    [key: string]: any;
+  };
+}
+
+export interface PhotonFeatureCollection {
+  type: string;
+  features: PhotonFeature[];
+}
+
+/**
+ * Filters, validates, logs, and deduplicates Photon GeoJSON geocode results.
+ * Drops non-DC items silently during typing.
+ * Deduplicates by same housenumber + street OR within 50 meters.
+ * Formats: "[housenumber] [street], [district or locality], Washington, DC"
+ * If no housenumber, uses properties.name.
+ */
+export function processPhotonResults(features: PhotonFeature[]): ProcessedSuggestions {
+  const validCandidates: ValidatedSuggestion[] = [];
+  let hadExplicitOutsideDc = false;
+
+  for (const feature of features) {
+    const coords = feature.geometry?.coordinates;
+    if (!coords || coords.length < 2) continue;
+
+    // GeoJSON: [lon, lat]
+    const lon = typeof coords[0] === 'number' ? coords[0] : parseFloat(String(coords[0]));
+    const lat = typeof coords[1] === 'number' ? coords[1] : parseFloat(String(coords[1]));
+
+    if (isNaN(lat) || isNaN(lon)) {
+      continue;
+    }
+
+    const p = feature.properties || {};
+    const state = (p.state || '').trim();
+    const city = (p.city || '').trim();
+
+    const isInsideDcBbox =
+      lat >= DC_BOUNDS.minLat &&
+      lat <= DC_BOUNDS.maxLat &&
+      lon >= DC_BOUNDS.minLng &&
+      lon <= DC_BOUNDS.maxLng;
+
+    // STEP 3: Keep a result if properties.state === "District of Columbia"
+    // OR (properties.city === "Washington" AND the point is inside the DC bbox).
+    // Drop everything else silently.
+    const isDc =
+      state === 'District of Columbia' ||
+      (city.toLowerCase() === 'washington' && isInsideDcBbox);
+
+    if (!isDc) {
+      if (state || city) {
+        hadExplicitOutsideDc = true;
+      }
+      continue;
+    }
+
+    const housenumber = (p.housenumber || '').trim();
+    const street = (p.street || '').trim();
+    const districtOrLocality = (p.district || p.locality || p.suburb || '').trim();
+    const name = (p.name || '').trim();
+
+    let shortLabel = '';
+    let fullLabel = '';
+    let addressKey = '';
+    const hasHouseNumber = Boolean(housenumber);
+
+    if (housenumber && street) {
+      shortLabel = `${housenumber} ${street}`;
+      fullLabel = districtOrLocality
+        ? `${shortLabel}, ${districtOrLocality}, Washington, DC`
+        : `${shortLabel}, Washington, DC`;
+      addressKey = `${housenumber.toLowerCase()} ${street.toLowerCase()}`;
+    } else if (name) {
+      shortLabel = name;
+      fullLabel = districtOrLocality
+        ? `${name}, ${districtOrLocality}, Washington, DC`
+        : `${name}, Washington, DC`;
+      addressKey = name.toLowerCase();
+    } else if (street) {
+      shortLabel = street;
+      fullLabel = districtOrLocality
+        ? `${street}, ${districtOrLocality}, Washington, DC`
+        : `${street}, Washington, DC`;
+      addressKey = street.toLowerCase();
+    } else {
+      shortLabel = districtOrLocality || 'Washington, DC';
+      fullLabel = `${shortLabel}, Washington, DC`;
+      addressKey = shortLabel.toLowerCase();
+    }
+
+    validCandidates.push({
+      id: String(p.osm_id || `${lat}-${lon}`),
+      displayName: fullLabel,
+      shortLabel,
+      fullLabel,
+      neighborhood: districtOrLocality || 'Washington, DC',
+      lat,
+      lng: lon,
+      hasHouseNumber,
+      addressKey,
+    });
+  }
+
+  // Deduplication: merge items sharing addressKey (if non-empty) OR within 50 meters
+  const uniqueList: ValidatedSuggestion[] = [];
+
+  for (const candidate of validCandidates) {
+    let existingIndex = -1;
+
+    for (let i = 0; i < uniqueList.length; i++) {
+      const existing = uniqueList[i];
+
+      const sameAddressKey =
+        candidate.addressKey &&
+        existing.addressKey &&
+        candidate.addressKey === existing.addressKey;
+
+      const dist = distanceMeters(candidate.lat, candidate.lng, existing.lat, existing.lng);
+      const isWithin50m = dist <= 50;
+
+      if (sameAddressKey || isWithin50m) {
+        existingIndex = i;
+        break;
+      }
+    }
+
+    if (existingIndex >= 0) {
+      // Keep the one with the most specific address (has house_number)
+      const existing = uniqueList[existingIndex];
+      if (!existing.hasHouseNumber && candidate.hasHouseNumber) {
+        uniqueList[existingIndex] = candidate;
+      }
+    } else {
+      uniqueList.push(candidate);
+    }
+
+    if (uniqueList.length >= 5) {
+      break;
+    }
+  }
+
+  const result: ProcessedSuggestions = uniqueList.slice(0, 5);
+  if (features.length > 0 && uniqueList.length === 0 && hadExplicitOutsideDc) {
     result.outsideDc = true;
   }
   return result;

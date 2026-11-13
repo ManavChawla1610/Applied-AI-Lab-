@@ -97,7 +97,7 @@ export const EarningsTab: React.FC<EarningsTabProps> = ({
           <div className="space-y-1">
             <h1 className="text-4xl sm:text-5xl lg:text-[54px] font-extrabold text-gray-900 tracking-tight leading-[1.12]">
               Your home could make{' '}
-              <span className="whitespace-nowrap text-gray-900 [font-variant-numeric:normal]">
+              <span className="tabular-nums text-gray-900">
                 {monthlyPayoutFormatted}
               </span>{' '}
               on Airbnb
