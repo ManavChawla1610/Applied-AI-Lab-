@@ -10,7 +10,14 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { resetKnowledgeBase, allChunks } from '../../lib/rag.ts';
-import { resetRetrieval, retrieve, retrievalStatus, startRetrieval, syncVectorIndex } from '../../lib/vectorStore.ts';
+import {
+  ensureIndexReady,
+  resetRetrieval,
+  retrieve,
+  retrievalStatus,
+  startRetrieval,
+  syncVectorIndex,
+} from '../../lib/vectorStore.ts';
 import { CitationRegistry, applyCitations } from '../../lib/citations.ts';
 import { fakeEmbedder, fakeEmbeddedTexts, resetFakeCounters } from './fakeEmbedder.ts';
 
@@ -93,6 +100,35 @@ async function main() {
   await fresh({ embedder: null });
   const nk = await retrieve('90 night cap vacation rental', 5);
   check(nk.method === 'keyword' && nk.hits.length > 0, 'keyword search when no API key');
+
+  // 6b. Slow startup (Cloud Run): a question asked before indexing finishes waits for it
+  //     and still gets vector search, instead of silently falling back to keywords.
+  resetRetrieval();
+  resetKnowledgeBase();
+  let firstCall = true;
+  const slowEmbedder = async (texts: string[], t: 'RETRIEVAL_DOCUMENT' | 'RETRIEVAL_QUERY') => {
+    if (firstCall) {
+      firstCall = false;
+      await new Promise((r) => setTimeout(r, 1500));
+    }
+    return fakeEmbedder(texts);
+  };
+  const startup = startRetrieval({ embedder: slowEmbedder, dir: fs.mkdtempSync(path.join(os.tmpdir(), 'kb-index-')), minScore: 0.05 });
+  await new Promise((r) => setTimeout(r, 50));
+  check(retrievalStatus().syncing === true && retrievalStatus().method === 'keyword', 'status shows indexing in progress');
+  const early = await retrieve('liability insurance requirement', 5);
+  check(early.method === 'vector', 'question during startup waits for the index and uses vector search');
+  await startup;
+
+  // 6c. A stuck embedder doesn't hang requests forever
+  resetRetrieval();
+  resetKnowledgeBase();
+  const stuck = startRetrieval({ embedder: () => new Promise(() => undefined), dir: fs.mkdtempSync(path.join(os.tmpdir(), 'kb-index-')) });
+  await new Promise((r) => setTimeout(r, 50));
+  const t0 = Date.now();
+  const ok = await ensureIndexReady(300);
+  check(!ok && Date.now() - t0 < 1000, 'waiting for a stuck index gives up after the time limit');
+  void stuck;
 
   // 7. Citations: renumber by first use, drop invented refs, strip SOURCES line
   const reg = new CitationRegistry();

@@ -38,7 +38,7 @@ import {
   verifyStep1CurrencyAndPercent,
 } from './src/lib/aiVerify.ts';
 import { listSources } from './lib/rag.ts';
-import { retrieve, retrievalStatus, startRetrieval } from './lib/vectorStore.ts';
+import { ensureIndexReady, retrieve, retrievalStatus, startRetrieval } from './lib/vectorStore.ts';
 import type { RetrievalMethod } from './lib/vectorStore.ts';
 import { CitationRegistry, applyCitations, citationFromHit, toolPayload } from './lib/citations.ts';
 import { renderAboutPage, robotsTxt, sitemapXml } from './lib/seoPages.ts';
@@ -704,7 +704,10 @@ app.get('/api/kb/search', async (req: Request, res: Response): Promise<void> => 
   }
 });
 
-app.get('/api/kb/status', (_req: Request, res: Response) => {
+app.get('/api/kb/status', async (_req: Request, res: Response) => {
+  // Opening the status page also finishes building the index (waits up to 25 s), so it
+  // doubles as a health check: "vector" means semantic search is live.
+  await ensureIndexReady(25_000);
   res.json(retrievalStatus());
 });
 
