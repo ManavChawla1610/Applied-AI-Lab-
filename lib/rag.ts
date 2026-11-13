@@ -308,6 +308,33 @@ export function listSources(): SourceRow[] {
   return sources;
 }
 
+export const FULL_TEXT_DIR = 'full';
+
+/**
+ * Reads the official pages saved by scripts/fetchSources.ts (knowledge/full/<id>.txt, first
+ * line "retrieved: YYYY-MM-DD") and the fetch report (knowledge/full/_report.json).
+ */
+function loadSavedFullText(dir: string) {
+  const fullDir = path.join(dir, FULL_TEXT_DIR);
+  if (!fs.existsSync(fullDir)) return;
+  const chunks: KnowledgeChunk[] = [];
+  for (const row of sources.filter((s) => s.use_in_rag === 'yes')) {
+    const file = path.join(fullDir, `${row.id}.txt`);
+    if (!fs.existsSync(file)) continue;
+    const raw = fs.readFileSync(file, 'utf8');
+    const m = raw.match(/^retrieved:\s*(\d{4}-\d{2}-\d{2})\s*\n/);
+    chunks.push(...chunkFullText(row, m ? raw.slice(m[0].length) : raw, m ? m[1] : ''));
+  }
+  fullTextChunks = chunks;
+  try {
+    const rep = JSON.parse(fs.readFileSync(path.join(fullDir, '_report.json'), 'utf8'));
+    if (rep && Array.isArray(rep.results)) fullFetchReport = rep;
+  } catch {
+    /* no report yet */
+  }
+  if (chunks.length) lastFullFetch = Date.now();
+}
+
 /** Loads the bundled summaries and source list. Safe to call many times. */
 export function loadKnowledgeBase(dir = KNOWLEDGE_DIR) {
   if (loaded) return;
@@ -322,9 +349,12 @@ export function loadKnowledgeBase(dir = KNOWLEDGE_DIR) {
     const row = sources.find((s) => s.file === f && s.use_in_rag === 'yes');
     return chunkSummary(f, fs.readFileSync(path.join(dir, f), 'utf8'), row);
   });
+  loadSavedFullText(dir);
   rebuild();
   loaded = true;
-  console.log(`[RAG] Loaded ${summaryChunks.length} summary chunks from ${files.length} files; ${sources.length} sources listed.`);
+  console.log(
+    `[RAG] Loaded ${summaryChunks.length} summary chunks from ${files.length} files, ${fullTextChunks.length} full-text chunks from saved pages; ${sources.length} sources listed.`
+  );
 }
 
 export interface FullDocResult {
@@ -346,20 +376,26 @@ async function pdfToText(buf: ArrayBuffer): Promise<string> {
   return String(text || '').replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
 }
 
+/** Downloads one source and returns its plain text. Throws with a readable reason on failure. */
+export async function fetchSourceText(row: SourceRow, fetchImpl: typeof fetch = fetch, timeoutMs = FETCH_TIMEOUT_MS): Promise<string> {
+  const res = await fetchImpl(row.url, {
+    signal: AbortSignal.timeout(timeoutMs),
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (compatible; DCHostCalculator/1.0; knowledge refresh)',
+      Accept: row.format === 'pdf' ? 'application/pdf' : 'text/html,application/xhtml+xml',
+    },
+    redirect: 'follow',
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const text = row.format === 'pdf' ? await pdfToText(await res.arrayBuffer()) : htmlToText(await res.text());
+  if (text.split(/\s+/).length < 60) throw new Error('page had too little text (it may need JavaScript to load)');
+  return text;
+}
+
 async function fetchOne(row: SourceRow, fetchImpl: typeof fetch, today: string): Promise<{ result: FullDocResult; chunks: KnowledgeChunk[] }> {
   const base = { id: row.id, title: row.title, url: row.url, format: row.format };
   try {
-    const res = await fetchImpl(row.url, {
-      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; DCHostCalculator/1.0; knowledge refresh)',
-        Accept: row.format === 'pdf' ? 'application/pdf' : 'text/html,application/xhtml+xml',
-      },
-      redirect: 'follow',
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const text = row.format === 'pdf' ? await pdfToText(await res.arrayBuffer()) : htmlToText(await res.text());
-    if (text.split(/\s+/).length < 60) throw new Error('page had too little text (it may need JavaScript to load)');
+    const text = await fetchSourceText(row, fetchImpl);
     const chunks = chunkFullText(row, text, today);
     return { result: { ...base, ok: true, passages: chunks.length }, chunks };
   } catch (err) {
@@ -375,7 +411,9 @@ async function fetchOne(row: SourceRow, fetchImpl: typeof fetch, today: string):
  * summaries still answer. Set KB_FETCH_FULL_DOCS=false to turn this off.
  */
 export function refreshFullDocuments(fetchImpl: typeof fetch = fetch): Promise<void> {
-  if (process.env.KB_FETCH_FULL_DOCS === 'false') return Promise.resolve();
+  // Off by default: on Cloud Run, downloads at runtime time out. Full text comes from
+  // knowledge/full/*.txt, refreshed weekly by GitHub Actions. Set KB_FETCH_FULL_DOCS=true to enable.
+  if (process.env.KB_FETCH_FULL_DOCS !== 'true') return Promise.resolve();
   if (fullFetchInFlight) return fullFetchInFlight;
   loadKnowledgeBase();
   fullFetchInFlight = (async () => {

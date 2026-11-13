@@ -1,0 +1,33 @@
+# Weekly refresh of the chatbot's source documents.
+# Downloads the official pages listed in knowledge/sources.csv, saves their text to
+# knowledge/full/, and commits any changes. Then sync AI Studio and republish.
+name: Refresh knowledge base
+
+on:
+  schedule:
+    - cron: '17 11 * * 1' # Mondays 11:17 UTC (6:17 am ET)
+  workflow_dispatch: {} # "Run workflow" button on the Actions tab
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install
+      - run: bunx tsx scripts/fetchSources.ts
+      - name: Commit changes
+        run: |
+          git config user.name "knowledge-refresh-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add knowledge/full
+          if git diff --cached --quiet; then
+            echo "No changes to the source documents."
+          else
+            git commit -m "Refresh knowledge base source documents ($(date -u +%Y-%m-%d))"
+            git push
+          fi

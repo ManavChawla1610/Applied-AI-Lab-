@@ -256,8 +256,6 @@ export async function retrieve(query: string, k = RAG_TOP_K): Promise<RetrievalR
   // On Cloud Run, background work at startup can stall because CPU is only fully allocated
   // during requests. So if the index isn't ready yet, build it now, inside this request.
   if (embedder && !ready) await ensureIndexReady(FIRST_QUERY_WAIT_MS);
-  // Fetch the full official pages in the background while this request keeps the CPU awake.
-  if (!fullDocumentsAttempted()) refreshFullDocuments().catch(() => undefined);
   if (ready && embedder && index) {
     try {
       const [vec] = await embedder([q], 'RETRIEVAL_QUERY');
