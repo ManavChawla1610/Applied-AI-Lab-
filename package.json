@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
-    "test:rag": "KB_FETCH_FULL_DOCS=false tsx src/test/ragTests.ts"
+    "test:rag": "KB_FETCH_FULL_DOCS=false tsx src/test/ragTests.ts",
+    "kb:fetch": "tsx scripts/fetchSources.ts"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",

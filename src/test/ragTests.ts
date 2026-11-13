@@ -164,6 +164,26 @@ async function main() {
   const pdfHit = await retrieve('proof of work outside the District for the vacation rental exemption', 5);
   check(pdfHit.hits.some((h) => h.chunk.kind === 'full_text'), 'search returns exact full-text passages');
 
+  // 6e. Saved pages (knowledge/full/<id>.txt from the weekly GitHub job) load at startup
+  const kbCopy = fs.mkdtempSync(path.join(os.tmpdir(), 'kb-docs-'));
+  fs.cpSync(path.resolve(process.cwd(), 'knowledge'), kbCopy, { recursive: true });
+  fs.mkdirSync(path.join(kbCopy, 'full'), { recursive: true });
+  const statute = Array.from({ length: 300 }, (_, i) => (i === 150 ? 'a fine of $6,000 and revocation' : `clause${i}`)).join(' ');
+  fs.writeFileSync(path.join(kbCopy, 'full', '03e.txt'), `retrieved: 2026-11-16\n${statute}\n`);
+  fs.writeFileSync(
+    path.join(kbCopy, 'full', '_report.json'),
+    JSON.stringify({ at: '2026-11-16T11:20:00Z', results: [{ id: '03e', title: 't', url: 'u', format: 'html', ok: true, passages: 0 }] })
+  );
+  resetRetrieval();
+  resetKnowledgeBase();
+  const { loadKnowledgeBase } = await import('../../lib/rag.ts');
+  loadKnowledgeBase(kbCopy);
+  const saved = allChunks().filter((c) => c.kind === 'full_text');
+  check(saved.length > 0 && saved.every((c) => c.sourceId === '03e' && c.retrieved === '2026-11-16'), `saved page loaded at startup (${saved.length} passages, dated)`);
+  check(saved.some((c) => c.text.includes('$6,000')), 'saved page text is searchable');
+  check(fullDocumentsReport()?.results[0].id === '03e', 'weekly fetch report is shown on the status page');
+  fs.rmSync(kbCopy, { recursive: true, force: true });
+
   // 7. Citations: renumber by first use, drop invented refs, strip SOURCES line
   const reg = new CitationRegistry();
   const items = reg.add(pen.hits.slice(0, 3), 'vector');
