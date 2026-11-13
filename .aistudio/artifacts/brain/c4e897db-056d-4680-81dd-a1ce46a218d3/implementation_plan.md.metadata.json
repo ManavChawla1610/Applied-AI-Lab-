@@ -1,6 +1,0 @@
-{
-  "summary":  "Plan to upgrade the chat assistant with server-side Gemini function calling (estimate_earnings) using the exact homepage geocoder and calculateEstimates model, NEEDS_WEB fallback, and a \"Show this on the map\" action button.",
-  "updatedAt":  "2026-11-11T19:22:05.242923701Z",
-  "requestFeedback":  true,
-  "userFacing":  true
-}
