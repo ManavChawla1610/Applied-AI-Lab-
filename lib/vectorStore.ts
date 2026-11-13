@@ -50,7 +50,8 @@ export type Embedder = (texts: string[], taskType: 'RETRIEVAL_DOCUMENT' | 'RETRI
 
 type ItemMeta = { hash: string; sourceId: string };
 
-const EMBED_BATCH = 100;
+// Smaller batches stay under per-minute quotas and let progress be saved more often.
+const EMBED_BATCH = 50;
 const EMBED_TIMEOUT_MS = 20_000;
 // How long a question waits for the index to finish building before using keyword search.
 const FIRST_QUERY_WAIT_MS = 12_000;
@@ -122,6 +123,33 @@ export function chunkHash(chunk: KnowledgeChunk): string {
 // Index sync
 // ---------------------------------------------------------------------------
 
+/** Seconds Gemini asks us to wait in a 429 error ("retryDelay": "37s" / "retry in 37.2s"). */
+export function retryDelaySeconds(err: unknown): number | null {
+  const msg = String((err as Error)?.message || err);
+  if (!/429|RESOURCE_EXHAUSTED|quota/i.test(msg)) return null;
+  const m = msg.match(/retryDelay\\?"?\s*:\s*\\?"?(\d+(?:\.\d+)?)s/) || msg.match(/retry in (\d+(?:\.\d+)?)\s*s/i);
+  return m ? Number(m[1]) : 30;
+}
+
+// Max seconds to wait on a quota error inside the app. The GitHub build script waits longer.
+let maxQuotaWaitSeconds = 0;
+export function setMaxQuotaWait(seconds: number) {
+  maxQuotaWaitSeconds = seconds;
+}
+
+async function embedWithRetry(texts: string[], taskType: 'RETRIEVAL_DOCUMENT' | 'RETRIEVAL_QUERY'): Promise<number[][]> {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await embedder!(texts, taskType);
+    } catch (err) {
+      const wait = retryDelaySeconds(err);
+      if (wait === null || attempt >= 6 || wait > maxQuotaWaitSeconds) throw err;
+      console.warn(`[RAG] Quota hit; waiting ${Math.ceil(wait)} s before retrying (attempt ${attempt}).`);
+      await new Promise((r) => setTimeout(r, Math.ceil(wait) * 1000 + 500));
+    }
+  }
+}
+
 async function openIndex(): Promise<LocalIndex<ItemMeta>> {
   if (index) return index;
   const idx = new LocalIndex<ItemMeta>(indexDir);
@@ -140,7 +168,13 @@ async function doSync(): Promise<SyncReport> {
   const wanted = new Map(chunks.map((c) => [c.id, c]));
   const existing = new Map((await idx.listItems()).map((it) => [it.id, it.metadata.hash]));
 
-  const toEmbed = chunks.filter((c) => existing.get(c.id) !== chunkHash(c));
+  // Anything already in the index (e.g. the prebuilt one from GitHub) is searchable right away.
+  if (existing.size > 0) ready = true;
+  // Summaries first: they cover every topic, so vector search is useful even if the
+  // quota runs out before the full-text passages are done.
+  const toEmbed = chunks
+    .filter((c) => existing.get(c.id) !== chunkHash(c))
+    .sort((a, b) => (a.kind === b.kind ? 0 : a.kind === 'summary' ? -1 : 1));
   const toRemove = [...existing.keys()].filter((id) => !wanted.has(id));
 
   // Remove passages that no longer exist, then embed and save batch by batch, so a quota
@@ -157,7 +191,7 @@ async function doSync(): Promise<SyncReport> {
   }
   for (let i = 0; i < toEmbed.length; i += EMBED_BATCH) {
     const batch = toEmbed.slice(i, i + EMBED_BATCH);
-    const vectors = await embedder(batch.map(embeddingText), 'RETRIEVAL_DOCUMENT');
+    const vectors = await embedWithRetry(batch.map(embeddingText), 'RETRIEVAL_DOCUMENT');
     await idx.beginUpdate();
     try {
       for (let j = 0; j < batch.length; j++) {
@@ -192,7 +226,7 @@ export function syncVectorIndex(): Promise<SyncReport> {
   syncInFlight = doSync()
     .catch((err) => {
       lastError = String((err as Error)?.message || err).slice(0, 200);
-      console.warn(`[RAG] Vector sync failed, keyword search will answer: ${lastError}`);
+      console.warn(`[RAG] Vector sync stopped (searching what is already embedded; keyword search if nothing is): ${lastError}`);
       throw err;
     })
     .finally(() => {

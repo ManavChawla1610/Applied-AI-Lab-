@@ -15,8 +15,9 @@ export const FALLBACK_MODEL = 'gemini-3.8-flash';
 // Gemini embedding model used to turn knowledge passages and questions into vectors.
 export const EMBEDDING_MODEL = 'gemini-embedding-001';
 export const EMBEDDING_DIMENSIONS = 768;
-// Where the vector database (vectra, file-based) is stored on the server.
-export const KB_INDEX_DIR = '.kb-index';
+// Where the vector database (vectra, file-based) lives. It is built by the weekly GitHub job
+// (scripts/buildIndex.ts) and committed, so the app doesn't spend embedding quota at startup.
+export const KB_INDEX_DIR = 'knowledge/index';
 // Passages returned per search and the minimum similarity (cosine, 0–1) to keep one.
 export const RAG_TOP_K = 5;
 export const RAG_MIN_SCORE = 0.5;
