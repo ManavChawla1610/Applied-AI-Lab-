@@ -1,4 +1,4 @@
-retrieved: 2026-11-13
+retrieved: 2026-11-16
 Airbnb:
 Vacation Rentals, Cabins, Beach Houses, Unique Homes & Experiences 
  How-to
@@ -24,7 +24,7 @@ Review the host service fee for a reservation
  Find the host service fee on desktop
  Click Today Menu Earnings 
  Go to Upcoming or Paid 
- Filter listings, payout methods, and date range, or search using the confirmation code or payout amount
+ Filter listings, earning types, and date range, or search using the confirmation code or payout amount
  Click to open a transaction
  Under Earnings , find the Airbnb service fee 
  Guest service fee 
